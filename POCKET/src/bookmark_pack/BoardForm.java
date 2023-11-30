@@ -27,7 +27,7 @@ public class BoardForm extends JFrame {
 		
 		// 북마크 GUI 구성
 		logoBtn.setLocation(410, 30);
-		logoBtn.setSize(180, 60);
+		logoBtn.setSize(180, 65);
 		logoBtn.setIcon(logo);
 		logoBtn.setBorderPainted(false);
 		logoBtn.setContentAreaFilled(false);
@@ -71,7 +71,9 @@ public class BoardForm extends JFrame {
 		content.setLocation(200, 300);
 		content.setSize(600, 500);
 		content.setHorizontalAlignment(JLabel.CENTER);
-		JScrollPane contentScroll = new JScrollPane(panel);
+		JScrollPane contentScroll = new JScrollPane(panel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		
 		btnUpdate.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 		btnUpdate.setLocation(810, 700);

@@ -3,11 +3,15 @@ package user_pack;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.sql.*;
+import java.text.ParseException;
+import java.io.*;
 
 public class JoinForm extends JDialog {
 	private LoginForm owner;
-	private UserDataSet users;
-	
+	private UserDB uDB = new UserDB();
+	private int repeatCheck = 0;
 	private JLabel lbTitle;
 	private JLabel lbEmail;
 	private JLabel lbId;
@@ -25,7 +29,6 @@ public class JoinForm extends JDialog {
 	public JoinForm(LoginForm owner) {
 		super(owner, "회원가입", true);
 		this.owner = owner;
-		users = owner.getUsers();
 		
 		Container c = getContentPane();
 		c.setLayout(null);
@@ -63,7 +66,7 @@ public class JoinForm extends JDialog {
 		tfId.setSize(250, 30);
 		
 		// 로고 버튼 달기
-		logoBtn.setSize(180, 60);
+		logoBtn.setSize(180, 65);
 		logoBtn.setLocation(310, 30);
 		logoBtn.setIcon(logo);
 		logoBtn.setBorderPainted(false);
@@ -108,10 +111,17 @@ public class JoinForm extends JDialog {
 	// 중복 확인 버튼 리스너
 	class RepeatActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			String uid = tfId.getText();
 			// Id 중복
-			if(users.isIdOverlap(tfId.getText())) {
+			if(uDB.IdCheck(uid)) { // DB 접속
+				System.out.println("아이디 중복 없음");
+				JOptionPane.showMessageDialog(JoinForm.this, "가능한 아이디입니다.");
+				repeatCheck = 1;
+			}
+			
+			else {
+				System.out.println("아이디 중복");
 				JOptionPane.showMessageDialog(JoinForm.this, "이미 존재하는 아이디입니다.");
-				tfId.requestFocus();
 			}
 		}
 	}
@@ -119,6 +129,11 @@ public class JoinForm extends JDialog {
 	// 회원가입 버튼 리스너
 	class SignupActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// 변수에 tf의 아이디, 비밀번호 초기화
+			String uid = tfId.getText();
+			String upwd = String.valueOf(tfPw.getPassword());
+			String uemail = tfEmail.getText();
+			
 			// 정보 하나라도 비어있는 경우
 			if(isBlank()) {
 				JOptionPane.showMessageDialog(JoinForm.this, "모든 정보를 입력해주세요.");
@@ -127,7 +142,7 @@ public class JoinForm extends JDialog {
 			// 모두 입력한 경우
 			else {
 				// Id 중복
-				if(users.isIdOverlap(tfId.getText())) {
+				if(repeatCheck == 3) {
 					JOptionPane.showMessageDialog(JoinForm.this, "이미 존재하는 아이디입니다.");
 					tfId.requestFocus();
 				}
@@ -139,15 +154,20 @@ public class JoinForm extends JDialog {
 				}
 				
 				// 회원가입 성공
-				else {
-					users.addUsers(new User (
-							tfId.getText(),
-							String.valueOf(tfPw.getPassword()),
-							tfEmail.getText())
-						);
+				else if(uDB.JoinUser(uid, upwd, uemail)){
+					System.out.println("회원가입 성공");
 					JOptionPane.showMessageDialog(JoinForm.this, "회원가입을 완료했습니다!");
 					dispose();
 					owner.setVisible(true);
+				}
+				
+				else {
+					System.out.println("회원가입 실패");
+					JOptionPane.showMessageDialog(null, "회원가입에 실패하였습니다.");
+					tfId.setText("");
+					tfPw.setText("");
+					tfEmail.setText("");
+					tfRe.setText("");
 				}
 			}
 		}

@@ -4,9 +4,12 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.sql.*;
+import java.text.ParseException;
+import java.io.*;
 
 public class LoginForm extends JFrame {
-	private UserDataSet users;
+	private UserDB uDB = new UserDB();
 	
 	private JLabel lbTitle;
 	private JLabel lbId;
@@ -18,11 +21,10 @@ public class LoginForm extends JFrame {
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
 	
-	public LoginForm() {
+	public LoginForm() { //UserOperator o
 		Container c = getContentPane();
 		c.setLayout(null);
-		
-		users = new UserDataSet();
+//		users = new UserDataSet();
 		
 		// 로그인 GUI 구성
 		lbTitle = new JLabel("로그인");
@@ -47,7 +49,7 @@ public class LoginForm extends JFrame {
 		tfPw.setSize(250, 30);
 		
 		// 로고 버튼 달기
-		logoBtn.setSize(180, 60);
+		logoBtn.setSize(180, 65);
 		logoBtn.setLocation(310, 30);
 		logoBtn.setIcon(logo);
 		logoBtn.setBorderPainted(false);
@@ -81,10 +83,6 @@ public class LoginForm extends JFrame {
 		showFrame();
 	}
 	
-	public UserDataSet getUsers() {
-		return users;
-	}
-	
 	public String getTfId() {
 		return tfId.getText();
 	}
@@ -92,46 +90,31 @@ public class LoginForm extends JFrame {
 	// 로그인 버튼 리스너
 	class LoginActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// 아이디칸이 빈 경우
-			if(tfId.getText().isEmpty()) {
+			// 변수에 tf의 아이디, 비밀번호 초기화
+			String uid = tfId.getText();
+			String upwd = String.valueOf(tfPw.getPassword());
+			
+			// 아이디 또는 비밀번호 칸이 빈 경우
+			if(uid.equals("") || upwd.equals("")) {
 				JOptionPane.showMessageDialog(LoginForm.this, 
-						"아이디를 입력하세요",
+						"아이디와 비밀번호를 모두 입력하세요",
 						"로그인폼",
 						JOptionPane.WARNING_MESSAGE);
 			}
 			
-			// 존재하는 아이디인 경우
-			else if(users.contains(new User(tfId.getText()))) {
-				// 비밀번호 칸이 빈 경우
-				if(String.valueOf(tfPw.getPassword()).isEmpty()) {
-					JOptionPane.showMessageDialog(LoginForm.this, 
-							"비밀번호를 입력하세요",
-							"로그인폼",
-							JOptionPane.WARNING_MESSAGE);
+			else if(uid != null && upwd != null) {
+				if(uDB.LoginUser(uid, upwd)) { // DB에 접속
+					System.out.println("로그인 성공");
+					JOptionPane.showMessageDialog(null, "로그인에 성공하셨습니다.");
+					// 메인페이지로 돌아가는 코드
 				}
 				
-				// 비밀번호가 일치하지 않는 경우
-				else if(!users.getUser(tfId.getText()).getPw().equals(String.valueOf(tfPw.getPassword()))) {
-					JOptionPane.showMessageDialog(LoginForm.this, 
-							"비밀번호가 일치하지 않습니다.");
-				}
-				
-				// 모두 성공
 				else {
-					// 메인페이지로 돌아가는 코드 추가
-//					InformationForm infoForm = new InformationForm(LoginForm.this);
-//					infoForm.setTaCheck(users.getUser(tfId.getText()).toString());
-					setVisible(false);
+					System.out.println("로그인 실패");
+					JOptionPane.showMessageDialog(null, "아이디 혹은 비밀번호가 존재하지 않습니다.");
 					tfId.setText("");
 					tfPw.setText("");
-//					infoForm.setVisible(true);
 				}
-			}
-			
-			// 존재하지 않는 Id인 경우
-			else {
-				JOptionPane.showMessageDialog(LoginForm.this, 
-						"존재하지 않는 아이디입니다.");
 			}
 		}
 	}
@@ -178,6 +161,7 @@ public class LoginForm extends JFrame {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		new UserDB().makeConnection();
 		new LoginForm();
 	}
 

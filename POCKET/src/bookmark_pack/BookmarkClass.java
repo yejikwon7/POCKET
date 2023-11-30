@@ -1,28 +1,74 @@
 package bookmark_pack;
 
 import java.util.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-class Bookmark {
+class BookmarkClass {
     private int bookId;
     //private int userId;
     private String title;
     private String content;
+    private LocalDate currentDate = LocalDate.now();
     private Date createdDate;
     private Date modifiedDate;
-    private int star;
+    private int importance;
+    private int year;
+    private int month;
+    private int day;
+//    private TagManager b_tags;
     private boolean save;
-
-    public Bookmark(int bookId, String title, String content, int star) {
+    
+    public BookmarkClass(String title, int importance) {
+    	this.title = title;
+		this.year = currentDate.getYear();
+		this.month = currentDate.getMonthValue();
+		this.day = currentDate.getDayOfMonth();
+		this.importance = importance;
+//		this.b_tags = new TagManager();
+    }
+    
+    // 북마크 객체 생성자
+    public BookmarkClass(int bookId, String title, String content, int importance) {
         this.bookId = bookId;
         //this.userNo = userNo;
         this.title = title;
         this.content = content;
-        this.star = star;
+        this.importance = importance;
         this.createdDate = new Date();
         this.modifiedDate = new Date();
     }
+    
+    // 북마크 작성날짜(연도) 반환
+ 	public int getYear() {
+ 		return year;
+ 	}
+ 	
+ 	// 북마크 작성날짜(월) 반환
+ 	public int getMonth() {
+ 		return month;
+ 	}
+ 	
+ 	// 북마크 작성날짜(일) 반환
+ 	public int getDay() {
+ 		return day;
+ 	}
+ 	
+ 	// 북마크 작성날짜(연도) 업데이트
+ 	public void updateYear() {
+ 		this.year = currentDate.getYear();
+ 	}
+ 		
+ 	// 북마크 작성날짜(월) 업데이트
+ 	public void updateMonth() {
+ 		this.month = currentDate.getMonthValue();
+ 	}
+ 		
+ 	// 북마크 작성날짜(일) 업데이트
+ 	public void updateDay() {
+ 		this.day = currentDate.getDayOfMonth();
+ 	}
     
     public int getBookId() {
     	return bookId;
@@ -65,17 +111,22 @@ class Bookmark {
         this.modifiedDate = modifiedDate;
     }
     
-    public int getStar() {
-    	return star;
+    public int getImportance() {
+    	return importance;
     }
     
-    public void setStar(int star) {
-    	this.star = star;
+    public void setimportance(int importance) {
+    	this.importance = importance;
     }
     
     public boolean isSave() {
     	return save;
     }
+    
+    // 북마크의 태그 배열 반환
+// 	public TagManager getTagManager() {
+// 		return b_tags;
+// 	}
 
     // Getter 및 Setter 메소드
 
@@ -85,7 +136,7 @@ class Bookmark {
                 "bookId =" + bookId +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
-                ", star='" + star + '\'' +
+                ", importance='" + importance + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 ", modifiedDate='" + modifiedDate + '\'' +
                 '}';
@@ -124,7 +175,7 @@ class Draft {
 }
 
 class ShowBookmark {
-    private List<Bookmark> bookmarks;
+    private List<BookmarkClass> bookmarks;
     private List<Draft> drafts;
 
     public ShowBookmark() {
@@ -132,7 +183,7 @@ class ShowBookmark {
         this.drafts = new ArrayList<>();
     }
 
-    public void addBookmark(Bookmark bookmark) {
+    public void addBookmark(BookmarkClass bookmark) {
     	bookmarks.add(bookmark);
     }
 
@@ -140,7 +191,7 @@ class ShowBookmark {
     	bookmarks.removeIf(bookmark -> bookmark.getBookId() == bookId);
     }
 
-    public List<Bookmark> getBookmarks() {
+    public List<BookmarkClass> getBookmarks() {
         return new ArrayList<>(bookmarks);
     }
     
@@ -162,14 +213,14 @@ class ShowBookmark {
         Draft draft1 = new Draft(1, "임시 저장 글", "임시 저장 글 내용입니다.", 3);
         showBookmark.saveDraft(draft1);
 
-        Bookmark bookmark1 = new Bookmark(1, "첫 번째 글", "안녕하세요. 첫 번째 글입니다.", 5);
-        Bookmark bookmark2 = new Bookmark(2, "두 번째 글", "두 번째 글입니다. 반갑습니다.", 4);
+        BookmarkClass bookmark1 = new BookmarkClass(1, "첫 번째 글", "안녕하세요. 첫 번째 글입니다.", 5);
+        BookmarkClass bookmark2 = new BookmarkClass(2, "두 번째 글", "두 번째 글입니다. 반갑습니다.", 4);
 
         showBookmark.addBookmark(bookmark1);
         showBookmark.addBookmark(bookmark2);
 
-        List<Bookmark> allBookmarks = showBookmark.getBookmarks();
-        for (Bookmark bookmark : allBookmarks) {
+        List<BookmarkClass> allBookmarks = showBookmark.getBookmarks();
+        for (BookmarkClass bookmark : allBookmarks) {
             System.out.println(bookmark);
         }
         
@@ -180,13 +231,13 @@ class ShowBookmark {
         }
 
         // 게시글 수정 예시: createdDate는 변경하지 않고 modifiedDate만 갱신
-        Bookmark modifiedBookmark = allBookmarks.get(0);
+        BookmarkClass modifiedBookmark = allBookmarks.get(0);
         modifiedBookmark.setContent("수정된 내용입니다.");
         modifiedBookmark.setModifiedDate(new Date());
 
         System.out.println("수정 후 게시글 목록:");
         allBookmarks = showBookmark.getBookmarks();
-        for (Bookmark bookmark : allBookmarks) {
+        for (BookmarkClass bookmark : allBookmarks) {
             System.out.println(bookmark);
         }
     }
