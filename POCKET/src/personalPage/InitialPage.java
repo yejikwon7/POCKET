@@ -6,11 +6,10 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-public class PersonalPage extends JFrame {
+public class InitialPage extends JFrame {
 	private ImageIcon logoImage;
 	private JLabel logoLabel;
-	private JLabel welcomeLabel;
-	private JButton newbookmarkButton;
+	private JButton joinLoginButton;
 	private JPanel categoryPanel;
 	private CategoryButtonListener categoryButtonListener = new CategoryButtonListener();
 	private JPanel tagPanel;
@@ -20,7 +19,7 @@ public class PersonalPage extends JFrame {
 	private JScrollPane bookmarkScrollPane;
 	private BookmarkManager bookmarkManager;
 	
-	public PersonalPage() {
+	public InitialPage() {
 		setTitle("POCKET");
 		setSize(1000, 800);
 		
@@ -33,16 +32,10 @@ public class PersonalPage extends JFrame {
 		logoLabel.setBounds(400, 25, 200, 50);
 		add(logoLabel);
 		
-		// 로그인 환영 문구
-		welcomeLabel = new JLabel("OOO님, 환영합니다!");	
-		welcomeLabel.setBounds(850, 5, 150, 20);
-		welcomeLabel.setForeground(Color.BLACK);
-		add(welcomeLabel);
-		
-		// 새 북마크 작성
-		newbookmarkButton = new JButton("새 북마크 작성");
-		newbookmarkButton.setBounds(780, 100, 120, 30);
-		add(newbookmarkButton);
+		// 회원가입/로그인
+		joinLoginButton = new JButton("회원가입/로그인");
+		joinLoginButton.setBounds(800, 20, 150, 30);
+		add(joinLoginButton);
 		
 		// 카테고리 목록을 나타낼 패널
 		categoryPanel = new JPanel();
@@ -170,13 +163,6 @@ public class PersonalPage extends JFrame {
     	            JLabel titleLabel = new JLabel("Title : " + toBePrinted.get(i).getTitle());
     	            JLabel importanceLabel = new JLabel("Importance : " + toBePrinted.get(i).getImportance());
     	            JLabel dateLabel = new JLabel("Date : " + toBePrinted.get(i).getYear() + "." + toBePrinted.get(i).getMonth() + "." + toBePrinted.get(i).getDay());
-//    	            TagManager b_tags = toBePrinted.get(i).getTagManager();
-//    	            StringBuilder stringBuilder = new StringBuilder();
-//    	            for (Tag tag : b_tags) {
-//    	                stringBuilder.append(tag).append(" ");
-//    	            }
-//    	            String b_tagsLabelText = stringBuilder.toString();
-//    	            JLabel b_tagsLabel = new JLabel(b_tagsLabelText);
     	            bookmark.add(titleLabel);
     	            bookmark.add(importanceLabel);
     	            bookmark.add(dateLabel);
@@ -190,6 +176,6 @@ public class PersonalPage extends JFrame {
     }
 	
 	public static void main(String[] args) {
-		new PersonalPage();
+		new InitialPage();
 	}
 }
