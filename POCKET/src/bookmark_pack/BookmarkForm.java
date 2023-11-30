@@ -4,21 +4,22 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 
-public class BoardForm extends JFrame {
+public class BookmarkForm extends JFrame {
+	private BookmarkData bookmarkData;
+	private int user;
 	private JPanel panel = new JPanel();
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
-	private JLabel title;
+	private JLabel laTitle;
 	private JLabel category;
 	private JLabel tag;
 	private JLabel star;
-	private JLabel author;
 	private JLabel date;
 	private JLabel content;
 	private JButton btnUpdate = new JButton("수정");
 	private JButton btnDelete = new JButton("삭제");
 	
-	public BoardForm() {
+	public BookmarkForm(int user) {
 		Container c = getContentPane();
 		c.setLayout(null);
 		
@@ -34,11 +35,11 @@ public class BoardForm extends JFrame {
 		logoBtn.setFocusPainted(false);
 		logoBtn.addActionListener(new LogoActionListener());
 		
-		title = new JLabel("제목");
-		title.setFont(new Font("맑은 고딕", Font.BOLD, 30));
-		title.setLocation(200, 120);
-		title.setSize(600, 50);
-		title.setHorizontalAlignment(JLabel.CENTER);
+		laTitle = new JLabel("제목");
+		laTitle.setFont(new Font("맑은 고딕", Font.BOLD, 30));
+		laTitle.setLocation(200, 120);
+		laTitle.setSize(600, 50);
+		laTitle.setHorizontalAlignment(JLabel.CENTER);
 		
 		category = new JLabel("카테고리");
 		category.setFont(new Font("맑은 고딕", Font.BOLD, 15));
@@ -87,7 +88,7 @@ public class BoardForm extends JFrame {
 		
 		c.add(panel);
 		panel.add(logoBtn);
-		panel.add(title);
+		panel.add(laTitle);
 		panel.add(category);
 		panel.add(tag);
 		panel.add(star);
@@ -98,7 +99,26 @@ public class BoardForm extends JFrame {
 		
 		setSize(1000, 800);
 		showFrame();
+		
+		this.bookmarkData = BookmarkDB.getBookmarkData(user);
+
+        if (bookmarkData != null) {
+            displayBookmarkData();
+        } else {
+            JOptionPane.showMessageDialog(null, "북마크 정보를 불러오는 데 실패했습니다.", "Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            System.out.println("Title에 대한 Bookmark 데이터가 null입니다: " + user);
+        }
 	}
+	
+	private void displayBookmarkData() {
+        laTitle.setText(bookmarkData.getTitle());
+        category.setText("카테고리: " + bookmarkData.getCategory());
+        tag.setText("태그: " + bookmarkData.getTag());
+        star.setText("중요도: " + bookmarkData.getStar());
+        date.setText("날짜: " + bookmarkData.getDate());
+        content.setText("<html>" + bookmarkData.getContent() + "</html>");
+    }
 	
 	// 로고 버튼 리스너
 	class LogoActionListener implements ActionListener {
@@ -109,10 +129,13 @@ public class BoardForm extends JFrame {
 	
 	// 수정 버튼 리스너
 	class UpdateActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			
-		}
-	}
+        public void actionPerformed(ActionEvent e) {
+            if (bookmarkData != null) {
+                UpdateBookmarkForm updateForm = new UpdateBookmarkForm(bookmarkData);
+                updateForm.setVisible(true);
+            }
+        }
+    }
 	
 	// 삭제 버튼 리스너
 	class DeleteActionListener implements ActionListener {
@@ -120,17 +143,16 @@ public class BoardForm extends JFrame {
 			int result = JOptionPane.showConfirmDialog(null, 
 					"해당 북마크를 삭제하시겠습니까?", 
 					"Message", JOptionPane.YES_NO_OPTION);
-			if(result == JOptionPane.CLOSED_OPTION) {
-				// 사용자가 창 닫은 경우 삭제하지 않음
-			}
-			
-			else if(result == JOptionPane.YES_OPTION) {
-				// 사용자가 "예"를 선택한 경우
-			}
-			
-			else {
-				// 사용가자 "아니오"를 선택한 경우
-			}
+			if (result == JOptionPane.YES_OPTION) {
+                boolean success = BookmarkDB.deleteBookmark(bookmarkData.getTitle());
+
+                if (success) {
+                    JOptionPane.showMessageDialog(null, "북마크가 삭제되었습니다.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    dispose(); // 현재 화면을 닫음
+                } else {
+                    JOptionPane.showMessageDialog(null, "북마크 삭제에 실패했습니다.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
 		}
 	}
 	
@@ -144,7 +166,8 @@ public class BoardForm extends JFrame {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new BoardForm();
+		new BookmarkForm(1);
+		
 	}
 
 }

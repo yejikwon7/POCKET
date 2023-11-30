@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.*;
 
 public class UpdateBookmarkForm extends JFrame {
+	private BookmarkData bookmarkData;
 	private JPanel panel = new JPanel();
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
@@ -17,7 +18,7 @@ public class UpdateBookmarkForm extends JFrame {
 	private JButton btnUpdate = new JButton("수정");
 	private JButton btnDelete = new JButton("삭제");
 	
-	public UpdateBookmarkForm() {
+	public UpdateBookmarkForm(BookmarkData bookmarkData) {
 		Container c = getContentPane();
 		c.setLayout(null);
 		
@@ -138,7 +139,6 @@ public class UpdateBookmarkForm extends JFrame {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new UpdateBookmarkForm();
 	}
 
 }
