@@ -27,7 +27,7 @@ public class InitialPage extends JFrame {
         c.setLayout(null);
         
         // 로고
-        logoImage = new ImageIcon("image/X.jpg");
+        logoImage = new ImageIcon("images/logo.png");
         logoLabel = new JLabel(logoImage);				
 		logoLabel.setBounds(400, 25, 200, 50);
 		add(logoLabel);

@@ -28,7 +28,7 @@ public class PersonalPage extends JFrame {
         c.setLayout(null);
         
         // 로고
-        logoImage = new ImageIcon("image/X.jpg");
+        logoImage = new ImageIcon("images/logo.png");
         logoLabel = new JLabel(logoImage);				
 		logoLabel.setBounds(400, 25, 200, 50);
 		add(logoLabel);
@@ -64,8 +64,9 @@ public class PersonalPage extends JFrame {
         bookmarkPanel.setLayout(null);
         bookmarkScrollPane = new JScrollPane(bookmarkPanel);
         bookmarkScrollPane.setBounds(100, 230, 800, 500);
-        bookmarkScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        bookmarkScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         bookmarkScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        bookmarkScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         add(bookmarkScrollPane);
         
         // 임의로 추가한 카테고리 예시
@@ -170,6 +171,7 @@ public class PersonalPage extends JFrame {
     	            JLabel titleLabel = new JLabel("Title : " + toBePrinted.get(i).getTitle());
     	            JLabel importanceLabel = new JLabel("Importance : " + toBePrinted.get(i).getImportance());
     	            JLabel dateLabel = new JLabel("Date : " + toBePrinted.get(i).getYear() + "." + toBePrinted.get(i).getMonth() + "." + toBePrinted.get(i).getDay());
+					// 태그 출력 부분 . . .
 //    	            TagManager b_tags = toBePrinted.get(i).getTagManager();
 //    	            StringBuilder stringBuilder = new StringBuilder();
 //    	            for (Tag tag : b_tags) {
