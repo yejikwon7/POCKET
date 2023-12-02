@@ -71,7 +71,7 @@ public class BookmarkForm extends JFrame {
 		content.setFont(new Font("맑은 고딕", Font.BOLD, 25));
 		content.setLocation(200, 300);
 		content.setSize(600, 500);
-		content.setHorizontalAlignment(JLabel.CENTER);
+		content.setHorizontalAlignment(JLabel.LEFT);
 		JScrollPane contentScroll = new JScrollPane(panel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -167,7 +167,6 @@ public class BookmarkForm extends JFrame {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new BookmarkForm(1);
-		
 	}
 
 }

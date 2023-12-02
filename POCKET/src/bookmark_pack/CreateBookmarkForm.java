@@ -2,12 +2,10 @@ package bookmark_pack;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.ArrayList;
 import java.awt.*;
-import java.awt.datatransfer.*;
 
-public class UpdateBookmarkForm extends JFrame {
+public class CreateBookmarkForm extends JFrame {
 	private BookmarkData bookmarkData;
 	private JPanel pContent = new JPanel();
 	private JPanel cPanel = new JPanel(); // 카테고리 패널
@@ -17,17 +15,13 @@ public class UpdateBookmarkForm extends JFrame {
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
 	private JTextField title = new JTextField(50);
-	private JTextArea content = new JTextArea();
+	private JTextField content = new JTextField(1000);
 	private JButton btnTstore = new JButton("임시저장");
 	private JButton btnStore = new JButton("작성");
 	private JButton btnMemo = new JButton("메모 추가");
 	private CategoryManager1 categoryManager1;
-//	private ArrayList<JTextArea> memoList = new ArrayList<>();
-//    private int memoCounter = 1; // 메모의 순서를 기록하기 위한 변수
-//    private Point mousePressedPoint; // 드래그 시작 지점을 저장하기 위한 변수
-
 	
-	public UpdateBookmarkForm(BookmarkData bookmarkData) {
+	public CreateBookmarkForm(BookmarkData bookmarkData) {
 		Container c = getContentPane();
 		c.setLayout(null);
 		
@@ -50,22 +44,15 @@ public class UpdateBookmarkForm extends JFrame {
 		btnMemo.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnMemo.setLocation(799, 120);
 		btnMemo.setSize(100, 38);
-//		btnMemo.addActionListener(new MemoActionListener());
+		btnMemo.addActionListener(new StoreActionListener());
 		
 		// 내용 입력
 		pContent.setLayout(new BorderLayout());
-		pContent.setBounds(90, 180, 820, 400);
-		content.setBounds(0, 0, 800, 400);
+		pContent.setBounds(100, 180, 800, 400);
 		content.setFont(new Font("맑은 고딕", Font.BOLD, 25));
-		content.setLineWrap(true);  // 자동 줄 바꿈 활성화
-		content.setWrapStyleWord(true);  // 단어 단위 자동 줄 바꿈 활성화
-		// 내용 입력 JTextArea에 MouseListener 및 TransferHandler 추가
-//        content.addMouseListener(new ContentMouseListener());
-//        content.setTransferHandler(new MemoTransferHandler());
-		JScrollPane contentScroll = new JScrollPane(content);
-		contentScroll.setBounds(0, 0, 800, 400);
-		contentScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		contentScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		content.setBounds(100, 180, 800, 400);
+		content.setHorizontalAlignment(JLabel.CENTER);
+//		JScrollPane contentScroll = new JScrollPane(content);
 		
 		categoryManager1 = new CategoryManager1();
 		categoryManager1.addCategory("여행");
@@ -113,7 +100,6 @@ public class UpdateBookmarkForm extends JFrame {
 		c.add(logoBtn);
 		c.add(title);
 		pContent.add(content);
-		pContent.add(contentScroll, BorderLayout.CENTER);
 		c.add(pContent);
 		c.add(cPanel);
 		c.add(tPanel);
@@ -122,60 +108,9 @@ public class UpdateBookmarkForm extends JFrame {
 		c.add(btnStore);
 		c.add(btnMemo);
 		
-		this.bookmarkData = bookmarkData;
-		
-		if (bookmarkData != null) {
-            // 북마크 데이터를 표시
-            title.setText(bookmarkData.getTitle());
-            SwingUtilities.invokeLater(() -> {
-                content.setText(bookmarkData.getContent());
-                content.repaint();
-            });
-//            content.setText(bookmarkData.getContent());
-            clickedStars = bookmarkData.getStar();
-            displayStarRating();
-            displayCategoriesAndTags();
-        } else {
-            JOptionPane.showMessageDialog(null, "북마크 정보를 불러오는 데 실패했습니다.", "Error", JOptionPane.ERROR_MESSAGE);
-            dispose();
-            System.out.println("Title에 대한 Bookmark 데이터가 null입니다: " + this.bookmarkData);
-        }
-		
-		
 		setSize(1000, 800);
 		showFrame();
 	}
-	
-	// 카테고리와 태그를 표시하는 메서드 추가
-    private void displayCategoriesAndTags() {
-        // 선택된 카테고리 버튼의 텍스트를 가져와서 설정
-        for (Component component : cPanel.getComponents()) {
-            if (component instanceof JButton) {
-                JButton categoryBtn = (JButton) component;
-                if (categoryBtn.getText().equals(bookmarkData.getCategory())) {
-                    categoryBtn.setSelected(true);
-                    break;
-                }
-            }
-        }
-
-        // 선택된 태그 버튼의 텍스트를 가져와서 설정
-        for (Component component : tPanel.getComponents()) {
-            if (component instanceof JButton) {
-                JButton tagBtn = (JButton) component;
-                if (bookmarkData.getTag().contains(tagBtn.getText())) {
-                    tagBtn.setSelected(true);
-                }
-            }
-        }
-    }
-    
-    private void displayStarRating() {
-        for (int i = 0; i < clickedStars; i++) {
-            JLabel starLabel = (JLabel) starPanel.getComponent(i);
-            starLabel.setForeground(Color.YELLOW);
-        }
-    }
 	
 	// 로고 버튼 리스너
 	class LogoActionListener implements ActionListener {
@@ -183,99 +118,6 @@ public class UpdateBookmarkForm extends JFrame {
 			// 메인페이지로 돌아가는 코드
 		}
 	}
-	
-//	// 메모 추가 버튼 리스너
-//    class MemoActionListener implements ActionListener {
-//        public void actionPerformed(ActionEvent e) {
-//        	// 새로운 JTextArea 생성
-//            JTextArea memoTextArea = createMemoTextArea();
-//            memoList.add(memoTextArea);
-//
-//            // JFrame에 JTextArea 추가
-//            pContent.add(memoTextArea);
-//            pContent.revalidate();
-//            pContent.repaint();
-//        }
-//
-//        private JTextArea createMemoTextArea() {
-//            JTextArea memoTextArea = new JTextArea(5, 30);
-//            memoTextArea.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-//            memoTextArea.setLineWrap(true);
-//            memoTextArea.setWrapStyleWord(true);
-//
-//            // JTextArea에 고유한 배경색 부여
-//            if (memoCounter % 2 == 0) {
-//                memoTextArea.setBackground(new Color(200, 200, 255)); // 파란색 배경
-//            } else {
-//                memoTextArea.setBackground(new Color(255, 200, 200)); // 빨간색 배경
-//            }
-//            memoCounter++;
-//
-//            // JTextArea에 MouseListener 추가
-//            memoTextArea.addMouseListener(new ContentMouseListener());
-//
-//            return memoTextArea;
-//        }
-//    }
-//
-// // 내용 입력 JTextArea에 MouseListener 및 TransferHandler 추가
-//    class ContentMouseListener extends MouseAdapter {
-//        @Override
-//        public void mousePressed(MouseEvent e) {
-//            mousePressedPoint = e.getPoint();
-//        }
-//
-//        @Override
-//        public void mouseReleased(MouseEvent e) {
-//            mousePressedPoint = null;
-//        }
-//    }
-//
-//    // TransferHandler를 사용하여 JTextArea의 드래그 앤 드롭을 관리
-//    class MemoTransferHandler extends TransferHandler {
-//        @Override
-//        public int getSourceActions(JComponent c) {
-//            return TransferHandler.COPY_OR_MOVE;
-//        }
-//
-//        @Override
-//        protected Transferable createTransferable(JComponent c) {
-//            return new StringSelection(""); // 빈 문자열을 전달
-//        }
-//
-//        @Override
-//        public boolean canImport(TransferSupport support) {
-//            return support.isDataFlavorSupported(DataFlavor.stringFlavor);
-//        }
-//
-//        @Override
-//        public boolean importData(TransferSupport support) {
-//            if (!canImport(support)) {
-//                return false;
-//            }
-//
-//            JTextArea textArea;
-//            try {
-//                String data = (String) support.getTransferable().getTransferData(DataFlavor.stringFlavor);
-//                textArea = new JTextArea(data);
-//                textArea.setBackground(new Color(200, 200, 255)); // 새로운 JTextArea의 배경색 설정
-//            } catch (UnsupportedFlavorException | IOException e) {
-//                return false;
-//            }
-//
-//            // 드롭 지점 계산
-//            JComponent dropComponent = (JComponent) support.getComponent();
-//            Point dropPoint = support.getDropLocation().getDropPoint();
-//            SwingUtilities.convertPointFromScreen(dropPoint, dropComponent);
-//
-//            // 새로운 JTextArea를 추가
-//            pContent.add(textArea);
-//            pContent.revalidate();
-//            pContent.repaint();
-//
-//            return true;
-//        }
-//    }
 	
 	// 카테고리 버튼 리스너
 	class CategoryActionListener implements ActionListener {
@@ -343,7 +185,7 @@ public class UpdateBookmarkForm extends JFrame {
     }
 
     private void updateStarColors(JLabel clickedStar) {
-    	char starSymbol = '☆'; // 사용 중인 별 모양을 가정
+    	char starSymbol = '☆'; // 사용 중인 별 모양을 가정합니다.
 
     	 Container starPanelContainer = (Container) clickedStar.getParent();
 
@@ -374,16 +216,16 @@ public class UpdateBookmarkForm extends JFrame {
 	// 임시저장 버튼 리스너
 	class TstoreActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// 텍스트 필드에서 제목과 내용을 가져옴
+			// 텍스트 필드에서 제목과 내용을 가져옵니다.
             String bookmarkTitle = title.getText();
             String bookmarkContent = content.getText();
 
-            // 임시 북마크 객체를 생성
+            // 임시 북마크 객체를 생성합니다.
             BookmarkData temporaryBookmark = new BookmarkData(
                 bookmarkContent, clickedStars, getCurrentDate(), bookmarkTitle, "", ""
             );
 
-            // 임시 북마크를 데이터베이스에 삽입
+            // 임시 북마크를 데이터베이스에 삽입합니다.
             boolean success = BookmarkDB.insertBookmark(temporaryBookmark);
 
             if (success) {
@@ -397,16 +239,16 @@ public class UpdateBookmarkForm extends JFrame {
 	// 작성 버튼 리스너
 	class StoreActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// 텍스트 필드에서 제목과 내용을 가져옴
+			// 텍스트 필드에서 제목과 내용을 가져옵니다.
             String bookmarkTitle = title.getText();
             String bookmarkContent = content.getText();
 
-            // 북마크 객체를 생성
+            // 북마크 객체를 생성합니다.
             BookmarkData newBookmark = new BookmarkData(
                 bookmarkContent, clickedStars, getCurrentDate(), bookmarkTitle, "", ""
             );
 
-            // 북마크를 데이터베이스에 업데이트하거나 삽입
+            // 북마크를 데이터베이스에 업데이트하거나 삽입합니다.
             boolean success;
             if (BookmarkDB.updateBookmarkData(newBookmark)) {
                 success = true;
@@ -423,13 +265,14 @@ public class UpdateBookmarkForm extends JFrame {
 	}
 	
 	private String getCurrentDate() {
-        // 현재 날짜를 문자열로 가져오는 로직을 구현
+        // 현재 날짜를 문자열로 가져오는 로직을 구현합니다.
+        // 예를 들어, java.time.LocalDate를 사용할 수 있습니다.
         return java.time.LocalDate.now().toString();
     }
 	
 	private void showFrame() {
 		setLocationRelativeTo(null);
-		setTitle("북마크 수정");
+		setTitle("북마크 생성");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setVisible(true);
