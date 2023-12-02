@@ -1,6 +1,7 @@
-package user_pack;
+package bookmark_pack;
 //로그인 GUI
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -103,10 +104,11 @@ public class LoginForm extends JFrame {
 			}
 			
 			else if(uid != null && upwd != null) {
-				if(uDB.LoginUser(uid, upwd)) { // DB에 접속
+				if(uDB.LoginUser(uid, upwd) != -1) { // DB에 접속
 					System.out.println("로그인 성공");
 					JOptionPane.showMessageDialog(null, "로그인에 성공하셨습니다.");
 					// 메인페이지로 돌아가는 코드
+					new PersonalPage(uid);
 				}
 				
 				else {
@@ -133,6 +135,7 @@ public class LoginForm extends JFrame {
 	class LogoActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// 메인페이지로 돌아가는 코드
+			new PersonalPage(null);
 		}
 	}
 	
@@ -162,7 +165,6 @@ public class LoginForm extends JFrame {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new UserDB().makeConnection();
-		new LoginForm();
 	}
 
 }

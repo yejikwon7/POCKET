@@ -1,10 +1,10 @@
 package bookmark_pack;
 
-public class TagData {
+public class Tag {
 	private String tagName;
 	
 	// 태그 객체 생성자
-	public TagData(String tagName) {
+	public Tag(String tagName) {
         this.tagName = tagName;
     }
 	

@@ -27,11 +27,11 @@ public class BookmarkDB {
 //    	List<Bookmark> list = new ArrayList<>();
 //    }
 
-    public static BookmarkData getBookmarkData(int user) {
+    public static Bookmark getBookmarkData(int user) {
         Connection con = makeConnection();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        BookmarkData bookmarkData = null;
+        Bookmark bookmarkData = null;
 
         String sql = "SELECT * FROM bookmark WHERE bookmark_user = ?";
 
@@ -41,9 +41,11 @@ public class BookmarkDB {
             pstmt.setInt(1, user);
 
             rs = pstmt.executeQuery();
-            
+            if (rs == null) {
+            	return null;
+            }
             if (rs.next()) {
-                bookmarkData = new BookmarkData(
+                bookmarkData = new Bookmark(
                         rs.getString("content"),
                         rs.getInt("star"),
                         rs.getString("date"),

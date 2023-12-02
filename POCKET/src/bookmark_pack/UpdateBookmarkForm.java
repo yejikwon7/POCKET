@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 
 public class UpdateBookmarkForm extends JFrame {
-	private BookmarkData bookmarkData;
+	private Bookmark bookmarkData;
 	private JPanel pContent = new JPanel();
 	private JPanel cPanel = new JPanel(); // 카테고리 패널
 	private JPanel tPanel = new JPanel(); // 태그 패널
@@ -27,7 +27,7 @@ public class UpdateBookmarkForm extends JFrame {
 //    private Point mousePressedPoint; // 드래그 시작 지점을 저장하기 위한 변수
 
 	
-	public UpdateBookmarkForm(BookmarkData bookmarkData) {
+	public UpdateBookmarkForm(Bookmark bookmarkData) {
 		Container c = getContentPane();
 		c.setLayout(null);
 		
@@ -83,13 +83,13 @@ public class UpdateBookmarkForm extends JFrame {
 		
 		tPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		tPanel.setBounds(100, 650, 400, 40);
-		categoryManager1.get("여행").getTagManager().addTag("대만");	
-        categoryManager1.get("여행").getTagManager().addTag("일본");
-        categoryManager1.get("공부").getTagManager().addTag("Java");
-        categoryManager1.get("공부").getTagManager().addTag("Python");
-        categoryManager1.get("대외활동").getTagManager().addTag("공모전");
-        categoryManager1.get("대외활동").getTagManager().addTag("해커톤");
-        categoryManager1.get("대외활동").getTagManager().addTag("동아리");
+//		categoryManager1.get("여행").getTagManager().addTag("대만");	
+//        categoryManager1.get("여행").getTagManager().addTag("일본");
+//        categoryManager1.get("공부").getTagManager().addTag("Java");
+//        categoryManager1.get("공부").getTagManager().addTag("Python");
+//        categoryManager1.get("대외활동").getTagManager().addTag("공모전");
+//        categoryManager1.get("대외활동").getTagManager().addTag("해커톤");
+//        categoryManager1.get("대외활동").getTagManager().addTag("동아리");
 		
         starPanel.setBounds(500, 590, 400, 50);
         starPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -132,7 +132,7 @@ public class UpdateBookmarkForm extends JFrame {
                 content.repaint();
             });
 //            content.setText(bookmarkData.getContent());
-            clickedStars = bookmarkData.getStar();
+            clickedStars = bookmarkData.getImportance();
             displayStarRating();
             displayCategoriesAndTags();
         } else {
@@ -152,7 +152,7 @@ public class UpdateBookmarkForm extends JFrame {
         for (Component component : cPanel.getComponents()) {
             if (component instanceof JButton) {
                 JButton categoryBtn = (JButton) component;
-                if (categoryBtn.getText().equals(bookmarkData.getCategory())) {
+                if (bookmarkData.getCategory() != null && categoryBtn.getText().equals(bookmarkData.getCategory())) {
                     categoryBtn.setSelected(true);
                     break;
                 }
@@ -163,7 +163,7 @@ public class UpdateBookmarkForm extends JFrame {
         for (Component component : tPanel.getComponents()) {
             if (component instanceof JButton) {
                 JButton tagBtn = (JButton) component;
-                if (bookmarkData.getTag().contains(tagBtn.getText())) {
+                if (bookmarkData.getTagManager() != null && bookmarkData.getTagManager().contains(tagBtn.getText())) {
                     tagBtn.setSelected(true);
                 }
             }

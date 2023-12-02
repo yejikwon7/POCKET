@@ -1,6 +1,7 @@
-package user_pack;
+package bookmark_pack;
 // 회원가입 GUI
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.util.ArrayList;

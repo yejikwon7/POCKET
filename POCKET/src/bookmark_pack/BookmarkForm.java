@@ -5,8 +5,8 @@ import java.awt.event.*;
 import java.awt.*;
 
 public class BookmarkForm extends JFrame {
-	private BookmarkData bookmarkData;
-	private int user;
+//	private BookmarkData bookmarkData;
+	private Bookmark bookmarkData;
 	private JPanel panel = new JPanel();
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
@@ -18,10 +18,14 @@ public class BookmarkForm extends JFrame {
 	private JLabel content;
 	private JButton btnUpdate = new JButton("수정");
 	private JButton btnDelete = new JButton("삭제");
+	private String user;
+	private int userId;
 	
-	public BookmarkForm(int user) {
+	public BookmarkForm(int userId) {
 		Container c = getContentPane();
 		c.setLayout(null);
+		user = String.valueOf(userId);
+		this.userId = userId;
 		
 		panel.setBounds(0, 0, 1000, 800); // 패널의 위치와 크기 설정
 		panel.setLayout(null);
@@ -100,7 +104,7 @@ public class BookmarkForm extends JFrame {
 		setSize(1000, 800);
 		showFrame();
 		
-		this.bookmarkData = BookmarkDB.getBookmarkData(user);
+		this.bookmarkData = BookmarkDB.getBookmarkData(userId);
 
         if (bookmarkData != null) {
             displayBookmarkData();
@@ -113,9 +117,9 @@ public class BookmarkForm extends JFrame {
 	
 	private void displayBookmarkData() {
         laTitle.setText(bookmarkData.getTitle());
-        category.setText("카테고리: " + bookmarkData.getCategory());
-        tag.setText("태그: " + bookmarkData.getTag());
-        star.setText("중요도: " + bookmarkData.getStar());
+//        category.setText("카테고리: " + bookmark.getCategory());
+        tag.setText("태그: " + bookmarkData.getTagManager());
+        star.setText("중요도: " + bookmarkData.getImportance());
         date.setText("날짜: " + bookmarkData.getDate());
         content.setText("<html>" + bookmarkData.getContent() + "</html>");
     }
@@ -124,6 +128,7 @@ public class BookmarkForm extends JFrame {
 	class LogoActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// 메인페이지로 돌아가는 코드
+			new PersonalPage(user);
 		}
 	}
 	
@@ -164,9 +169,9 @@ public class BookmarkForm extends JFrame {
 		setVisible(true);
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		new BookmarkForm(1);
-	}
+//	public static void main(String[] args) {
+//		// TODO Auto-generated method stub
+//		new BookmarkForm(1);
+//	}
 
 }

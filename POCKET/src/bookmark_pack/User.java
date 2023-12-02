@@ -1,4 +1,4 @@
-package user_pack;
+package bookmark_pack;
 
 class User {
     private String id;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class TagManager1 {
-	private ArrayList<TagData> tagManager;
+	private ArrayList<Tag> tagManager;
 	
 	// 태그 배열 생성
 	public TagManager1() {
@@ -13,15 +13,15 @@ public class TagManager1 {
 	
 	// 태그 추가
     public void addTag(String tagName) {
-        TagData addTag = new TagData(tagName);
+        Tag addTag = new Tag(tagName);
         tagManager.add(addTag);
     }
     
     // 태그 삭제
     public void delTag(String tagName) {
-        Iterator<TagData> iterator = tagManager.iterator();
+        Iterator<Tag> iterator = tagManager.iterator();
         while (iterator.hasNext()) {
-        	TagData delTag = iterator.next();
+        	Tag delTag = iterator.next();
             if (delTag.getName().equals(tagName)) {
                 iterator.remove();
                 break;
@@ -35,15 +35,26 @@ public class TagManager1 {
     }
     
     // 태그 배열의 객체를 반환 : index로 탐색
-    public TagData get(int index) {
+    public Tag get(int index) {
         return tagManager.get(index);
     }
     // 태그 배열의 객체를 반환 : name으로 탐색
-    public TagData get(String name) {
+    public Tag get(String name) {
     	for (int i = 0; i < tagManager.size(); i++) {
     		if (tagManager.get(i).getName().equals(name))
     			return tagManager.get(i);
         }
     	return null;
     }
+    
+    // 해당 태그 이름이 존재하는지 확인하는 메서드 추가
+    public boolean contains(String tagName) {
+        for (Tag tag : tagManager) {
+            if (tag.getName().equals(tagName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

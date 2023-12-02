@@ -1,4 +1,4 @@
-package user_pack;
+package bookmark_pack;
 
 import java.io.*;
 import java.sql.*;
@@ -101,17 +101,17 @@ public class UserDB {
     }
 	
 	// 로그인
-    public boolean LoginUser(String id, String pwd) {
-        boolean flag = false;
+    public int LoginUser(String id, String pwd) {
+        int userId = -1;
         try (Connection con = makeConnection();
-             PreparedStatement pstmt = con.prepareStatement("select member_pwd from member where member_id=?")) {
+             PreparedStatement pstmt = con.prepareStatement("select member_num, member_pwd from member where member_id=?")) {
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
                 String storedPwd = rs.getString("member_pwd");
                 if (pwd.equals(storedPwd)) {
-                    flag = true;
+                    userId = rs.getInt("member_num"); // 로그인 성공 시 사용자 ID를 설정
                     System.out.println("로그인 성공");
                 } else {
                     System.out.println("비밀번호 불일치");
@@ -121,13 +121,8 @@ public class UserDB {
             }
 
         } catch (Exception e) {
-            flag = false;
             System.out.println("로그인 실패: " + e.getMessage());
         }
-        return flag;
+        return userId;
     }
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-	}
 }

@@ -1,4 +1,4 @@
-package user_pack;
+package bookmark_pack;
 
 import java.util.ArrayList;
 
