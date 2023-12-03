@@ -3,7 +3,6 @@ package personalPage;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
 import javax.swing.*;
 
 public class PersonalPage extends JFrame {
@@ -69,6 +68,10 @@ public class PersonalPage extends JFrame {
         bookmarkScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         add(bookmarkScrollPane);
         
+        
+        
+        /* ----- 예시 ----- */
+       
         // 임의로 추가한 카테고리 예시
         categoryManager = new CategoryManager();
         categoryManager.addCategory("여행");
@@ -101,44 +104,125 @@ public class PersonalPage extends JFrame {
         bookmarkManager.get("항공권 예약").getTagManager().addTag("대만");
         bookmarkManager.get("일본 여행 경비 정리").getTagManager().addTag("일본");
         
+        /* ----- 예시 ----- */
+        
+        
+        
         // 카테고리 목록 패널에 카테고리 버튼 생성
-        for (int i = 0; i < categoryManager.getSize(); i++) {
-        	JButton categoryButton = new JButton(categoryManager.get(i).getName());
-        	categoryPanel.add(categoryButton);
-        	categoryButton.addActionListener(categoryButtonListener);
-        }
+        panintCategoryPanel();
         
         setVisible(true);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	// 카테고리 목록 패널에 카테고리 버튼 생성
+	private void panintCategoryPanel() {
+		categoryPanel.removeAll();
+		// 카테고리 추가 버튼
+		JButton addCategoryButton = new JButton("+");
+		addCategoryButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String categoryName = JOptionPane.showInputDialog(null, "추가할 카테고리의 이름을 입력해주세요.", "Message", JOptionPane.PLAIN_MESSAGE);
+				if (categoryName != null && !categoryName.trim().isEmpty()) {
+					categoryManager.addCategory(categoryName);
+					panintCategoryPanel();	// 카테고리 목록 패널 업데이트
+		        }
+			}
+		});
+		categoryPanel.add(addCategoryButton);
+		
+		for (int i = 0; i < categoryManager.getSize(); i++) {
+        	JPanel buttonPanel = new JPanel();
+        	buttonPanel.setLayout(new BorderLayout());
+        	
+        	String Name = categoryManager.get(i).getName();
+        	JButton categoryButton = new JButton(Name);	
+        	categoryButton.addActionListener(categoryButtonListener);
+        	
+        	JButton deleteButton = new JButton("X");
+        	deleteButton.setForeground(Color.RED);
+        	deleteButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    int result = JOptionPane.showConfirmDialog(null, "해당 카테고리를 삭제하시겠습니까?", "Message", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                    	categoryManager.delCategory(Name);
+                    	panintCategoryPanel();	// 카테고리 목록 패널 업데이트
+                    }
+                }
+            });
+        	
+        	buttonPanel.add(categoryButton, BorderLayout.WEST);
+        	buttonPanel.add(deleteButton, BorderLayout.EAST);
+        	categoryPanel.add(buttonPanel);
+        }
+		categoryPanel.revalidate();
+		categoryPanel.repaint();
+	}
+	
 	// 카테고리 버튼 클릭 시, 태그 목록 패널에 태그 버튼들을 생성하는 CategoryButtonListener
 	private class CategoryButtonListener implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
-    		tagPanel.removeAll();
     		// 클릭된 버튼의 텍스트를 get
     		if (e.getSource() instanceof JButton) {
-    			JButton clickedButton = (JButton) e.getSource();
-    	        String buttonText = clickedButton.getText();
-    	        // 버튼의 텍스트와 같은 name을 가진 카테고리를 찾고, 그 카테고리의 태그들을 태그 목록 패널에 버튼을 생성
-    	        for (int i = 0; i < categoryManager.getSize(); i++) {
-    	        	if (categoryManager.get(i).getName().equals(buttonText)) {
-    	        		TagManager c_tags = categoryManager.get(i).getTagManager();
-    	        		if (c_tags != null) {
-    	        			for (int j =0; j < c_tags.getSize(); j++) {
-    	        			JButton tagButton = new JButton(c_tags.get(j).getName());
-    	                	tagPanel.add(tagButton);
-    	                	tagButton.addActionListener(tagButtonListener);
-    	        			}
-    	        		}
-    	        	}
-    	        }
-    		}
-    		tagPanel.revalidate();
-            tagPanel.repaint();
-    	}	
-    }
+			JButton clickedButton = (JButton) e.getSource();
+	        String buttonText = clickedButton.getText();
+    		panintTagPanel(buttonText);	
+    		}	
+    	}
+	}
+	// 태그 목록 패널에 태그 버튼 생성
+	private void panintTagPanel(String buttonText) {
+		tagPanel.removeAll();
+		// 태그 추가 버튼
+		JButton addTagButton = new JButton("+");
+		addTagButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String tagName = JOptionPane.showInputDialog(null, "추가할 태그의 이름을 입력해주세요.", "Message", JOptionPane.PLAIN_MESSAGE);
+				if (tagName != null && !tagName.trim().isEmpty()) {
+					categoryManager.get(buttonText).getTagManager().addTag(tagName);
+					panintTagPanel(buttonText);	// 태그 목록 패널 업데이트
+		        }
+			}
+		});
+		tagPanel.add(addTagButton);
+				
+	    // buttonText와 같은 name을 가진 카테고리를 찾고, 그 카테고리의 태그들을 태그 목록 패널에 버튼을 생성
+	    for (int i = 0; i < categoryManager.getSize(); i++) {
+	    	if (categoryManager.get(i).getName().equals(buttonText)) {
+	    		TagManager c_tags = categoryManager.get(i).getTagManager();
+	    		if (c_tags != null) {
+	        		for (int j =0; j < c_tags.getSize(); j++) {
+	        		JPanel buttonPanel = new JPanel();
+	                buttonPanel.setLayout(new BorderLayout());
+	        	        
+	       	        String Name = c_tags.get(j).getName();
+	      			JButton tagButton = new JButton(Name);
+	       			tagButton.addActionListener(tagButtonListener);
+	        			
+	       			JButton deleteButton = new JButton("X");
+	               	deleteButton.setForeground(Color.RED);
+	               	deleteButton.addActionListener(new ActionListener() {
+	               		public void actionPerformed(ActionEvent e) {
+	               			int result = JOptionPane.showConfirmDialog(null, "해당 태그를 삭제하시겠습니까?", "Message", JOptionPane.YES_NO_OPTION);
+	                        if (result == JOptionPane.YES_OPTION) {
+	                           	c_tags.delTag(Name);
+	                           	panintTagPanel(buttonText);	// 태그 목록 패널 업데이트
+	                        }
+	                    }
+	               	});
+	                	
+	                buttonPanel.add(tagButton, BorderLayout.WEST);
+	               	buttonPanel.add(deleteButton, BorderLayout.EAST);
+	               	tagPanel.add(buttonPanel);
+	        		}
+	        	}
+	        }
+	    }
+	    tagPanel.revalidate();
+	    tagPanel.repaint(); 
+	}
+	
 	// 태그 버튼 클릭 시, 북마크 목록 패널에 북마크들을 생성하는 TagButtonListener
     private class TagButtonListener implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
@@ -171,14 +255,6 @@ public class PersonalPage extends JFrame {
     	            JLabel titleLabel = new JLabel("Title : " + toBePrinted.get(i).getTitle());
     	            JLabel importanceLabel = new JLabel("Importance : " + toBePrinted.get(i).getImportance());
     	            JLabel dateLabel = new JLabel("Date : " + toBePrinted.get(i).getYear() + "." + toBePrinted.get(i).getMonth() + "." + toBePrinted.get(i).getDay());
-					// 태그 출력 부분 . . .
-//    	            TagManager b_tags = toBePrinted.get(i).getTagManager();
-//    	            StringBuilder stringBuilder = new StringBuilder();
-//    	            for (Tag tag : b_tags) {
-//    	                stringBuilder.append(tag).append(" ");
-//    	            }
-//    	            String b_tagsLabelText = stringBuilder.toString();
-//    	            JLabel b_tagsLabel = new JLabel(b_tagsLabelText);
     	            bookmark.add(titleLabel);
     	            bookmark.add(importanceLabel);
     	            bookmark.add(dateLabel);
