@@ -136,7 +136,7 @@ public class InitialPage extends JFrame {
 	// 회원가입, 로그인 버튼
 	class JoinActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// 메인페이지로 돌아가는 코드
+			dispose();
 			new LoginForm();
 		}
 	}

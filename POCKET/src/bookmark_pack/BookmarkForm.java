@@ -19,13 +19,14 @@ public class BookmarkForm extends JFrame {
 	private JButton btnUpdate = new JButton("수정");
 	private JButton btnDelete = new JButton("삭제");
 	private String user;
-	private int userId;
+	private static int id;
+	private static String uid;
 	
-	public BookmarkForm(int userId) {
+	public BookmarkForm(int id, String uid) {
 		Container c = getContentPane();
 		c.setLayout(null);
-		user = String.valueOf(userId);
-		this.userId = userId;
+		this.id = id;
+		this.uid = uid;
 		
 		panel.setBounds(0, 0, 1000, 800); // 패널의 위치와 크기 설정
 		panel.setLayout(null);
@@ -104,15 +105,16 @@ public class BookmarkForm extends JFrame {
 		setSize(1000, 800);
 		showFrame();
 		
-		this.bookmarkData = BookmarkDB.getBookmarkData(userId);
+		this.bookmarkData = BookmarkDB.getBookmarkData(id);
 
         if (bookmarkData != null) {
             displayBookmarkData();
         } else {
             JOptionPane.showMessageDialog(null, "북마크 정보를 불러오는 데 실패했습니다.", "Error", JOptionPane.ERROR_MESSAGE);
             dispose();
-            System.out.println("Title에 대한 Bookmark 데이터가 null입니다: " + user);
+            System.out.println("Title에 대한 Bookmark 데이터가 null입니다: " + id);
         }
+	
 	}
 	
 	private void displayBookmarkData() {
@@ -128,7 +130,7 @@ public class BookmarkForm extends JFrame {
 	class LogoActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// 메인페이지로 돌아가는 코드
-			new PersonalPage(user);
+			new PersonalPage(id, uid);
 		}
 	}
 	
@@ -136,7 +138,7 @@ public class BookmarkForm extends JFrame {
 	class UpdateActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if (bookmarkData != null) {
-                UpdateBookmarkForm updateForm = new UpdateBookmarkForm(bookmarkData);
+                UpdateBookmarkForm updateForm = new UpdateBookmarkForm(bookmarkData, id, uid);
                 updateForm.setVisible(true);
             }
         }

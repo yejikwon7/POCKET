@@ -94,6 +94,7 @@ public class LoginForm extends JFrame {
 			// 변수에 tf의 아이디, 비밀번호 초기화
 			String uid = tfId.getText();
 			String upwd = String.valueOf(tfPw.getPassword());
+			int userId = 0;
 			
 			// 아이디 또는 비밀번호 칸이 빈 경우
 			if(uid.equals("") || upwd.equals("")) {
@@ -105,10 +106,13 @@ public class LoginForm extends JFrame {
 			
 			else if(uid != null && upwd != null) {
 				if(uDB.LoginUser(uid, upwd) != -1) { // DB에 접속
+					userId = uDB.LoginUser(uid, upwd);
 					System.out.println("로그인 성공");
 					JOptionPane.showMessageDialog(null, "로그인에 성공하셨습니다.");
 					// 메인페이지로 돌아가는 코드
-					new PersonalPage(uid);
+					dispose();
+
+					new PersonalPage(userId, uid);
 				}
 				
 				else {
@@ -135,7 +139,8 @@ public class LoginForm extends JFrame {
 	class LogoActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// 메인페이지로 돌아가는 코드
-			new PersonalPage(null);
+			dispose();
+			new InitialPage();
 		}
 	}
 	

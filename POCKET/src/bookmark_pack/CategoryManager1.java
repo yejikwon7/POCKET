@@ -48,4 +48,33 @@ public class CategoryManager1 {
         }
     	return null;
     }
+    
+    // 태그 목록을 문자열로 반환
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (CategoryData category : categoryManager) {
+            result.append(category.getName()).append(", ");
+        }
+        // 마지막 콤마와 공백 제거
+        if (result.length() > 0) {
+            result.setLength(result.length() - 2);
+        }
+        return result.toString();
+    }
+    
+    // 카테고리 목록을 초기화
+    public void clearCategories() {
+        categoryManager.clear();
+    }
+    
+    // 해당 카테고리가 이미 존재하는지 확인
+    public boolean containsCategory(String categoryName) {
+        for (CategoryData category : categoryManager) {
+            if (category.getName().equals(categoryName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

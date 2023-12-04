@@ -56,5 +56,37 @@ public class TagManager1 {
         }
         return false;
     }
+    
+    // 태그 목록을 문자열로 반환
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Tag tag : tagManager) {
+            result.append(tag.getName()).append(", ");
+        }
+        // 마지막 콤마와 공백 제거
+        if (result.length() > 0) {
+            result.setLength(result.length() - 2);
+        }
+        return result.toString();
+    }
 
+    // 문자열을 파싱하여 태그 추가
+    public void parseTags(String tagsString) {
+        String[] tagsArray = tagsString.split(", ");
+        for (String tagName : tagsArray) {
+            addTag(tagName);
+        }
+    }
+
+ // 태그 배열 교체
+    public void setTags(ArrayList<String> tagNames) {
+        // 기존 태그 지우기
+        tagManager.clear();
+
+        // 새로운 태그 추가
+        for (String tagName : tagNames) {
+            addTag(tagName);
+        }
+    }
 }

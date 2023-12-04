@@ -16,6 +16,17 @@ public class BookmarkManager {
 		Bookmark addBookmark = new Bookmark(title, importance);
 		bookmarkManager.add(addBookmark);
 	}
+	
+    // 북마크 추가
+    public void addBookmark(Bookmark newBookmark) {
+        bookmarkManager.add(newBookmark);
+    }
+    
+    // 북마크 추가
+    public void addBookmark(String title, int importance, String tag) {
+		Bookmark addBookmark = new Bookmark(title, importance, tag);
+		bookmarkManager.add(addBookmark);
+    }
 	    
 	// 북마크 삭제
 	public void delBookmark() {
