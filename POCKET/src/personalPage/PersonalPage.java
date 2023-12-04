@@ -243,12 +243,12 @@ public class PersonalPage extends JFrame {
     			}
     			// toBePrinted 배열에 있는 북마크들을 북마크 목록 패널에 출력
     			for (int i = 0; i < toBePrinted.size(); i++) {
-    				JPanel bookmark = new JPanel();
+    				JButton bookmark = new JButton();
     	        	bookmark.setSize(200, 200);
     	        	int x = 75 + 225*(i%3);
     	            int y = 75 + 275*(i/3);
     	        	bookmark.setLocation(x , y);
-    	        	bookmark.setBackground(new Color(255, 255, 255, 0));
+    	        	bookmark.setBackground(Color.LIGHT_GRAY);
     	            bookmark.setBorder(BorderFactory.createLineBorder(Color.BLACK));
     	        	bookmark.setLayout(null);
     	        	
