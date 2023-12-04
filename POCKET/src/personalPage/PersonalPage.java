@@ -90,19 +90,18 @@ public class PersonalPage extends JFrame {
         // 임의로 추가한 북마크 예시
         bookmarkManager = new BookmarkManager();
         bookmarkManager.addBookmark("타이베이 동먼역 딤섬 맛집", 4);
-        bookmarkManager.addBookmark("대만 여행 경비 정리", 5);
         bookmarkManager.addBookmark("버스 투어 예약 관련 정보글", 2);
         bookmarkManager.addBookmark("환전 관련 블로그", 3);
         bookmarkManager.addBookmark("대만 이지카드 지하철 정보", 3);
         bookmarkManager.addBookmark("항공권 예약", 5);
-        bookmarkManager.addBookmark("일본 여행 경비 정리", 5);
+        bookmarkManager.addBookmark("여행 경비 정리", 5);
         bookmarkManager.get("타이베이 동먼역 딤섬 맛집").getTagManager().addTag("대만");
-        bookmarkManager.get("대만 여행 경비 정리").getTagManager().addTag("대만");
         bookmarkManager.get("버스 투어 예약 관련 정보글").getTagManager().addTag("대만");
         bookmarkManager.get("환전 관련 블로그").getTagManager().addTag("대만");
         bookmarkManager.get("대만 이지카드 지하철 정보").getTagManager().addTag("대만");
         bookmarkManager.get("항공권 예약").getTagManager().addTag("대만");
-        bookmarkManager.get("일본 여행 경비 정리").getTagManager().addTag("일본");
+        bookmarkManager.get("여행 경비 정리").getTagManager().addTag("대만");
+        bookmarkManager.get("여행 경비 정리").getTagManager().addTag("일본");
         
         /* ----- 예시 ----- */
         
@@ -137,7 +136,7 @@ public class PersonalPage extends JFrame {
         	buttonPanel.setLayout(new BorderLayout());
         	
         	String Name = categoryManager.get(i).getName();
-        	JButton categoryButton = new JButton(Name);	
+        	JButton categoryButton = new JButton(Name);
         	categoryButton.addActionListener(categoryButtonListener);
         	
         	JButton deleteButton = new JButton("X");
@@ -251,13 +250,59 @@ public class PersonalPage extends JFrame {
     	        	bookmark.setLocation(x , y);
     	        	bookmark.setBackground(new Color(255, 255, 255, 0));
     	            bookmark.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    	        	bookmark.setLayout(new BoxLayout(bookmark, BoxLayout.Y_AXIS));
-    	            JLabel titleLabel = new JLabel("Title : " + toBePrinted.get(i).getTitle());
-    	            JLabel importanceLabel = new JLabel("Importance : " + toBePrinted.get(i).getImportance());
-    	            JLabel dateLabel = new JLabel("Date : " + toBePrinted.get(i).getYear() + "." + toBePrinted.get(i).getMonth() + "." + toBePrinted.get(i).getDay());
-    	            bookmark.add(titleLabel);
-    	            bookmark.add(importanceLabel);
-    	            bookmark.add(dateLabel);
+    	        	bookmark.setLayout(null);
+    	        	
+    	        	Bookmark current = toBePrinted.get(i);
+    	        	
+    	        	JPanel titlePanel = new JPanel();
+    	        	titlePanel.setLayout(new BorderLayout());
+    	        	titlePanel.setLocation(15, 15);
+    	        	titlePanel.setSize(170, 65);
+    	        	titlePanel.setBackground(new Color(255, 255, 255, 0));
+    	        	titlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    	            JLabel titleLabel = new JLabel(current.getTitle());
+    	            titlePanel.add(titleLabel, BorderLayout.CENTER);
+    	            bookmark.add(titlePanel);
+    	            
+    	            JPanel datePanel = new JPanel();
+    	            datePanel.setLocation(15, 85);
+    	            datePanel.setSize(170, 30);
+    	            datePanel.setBackground(new Color(255, 255, 255, 0));
+    	            datePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    	            JLabel dateLabel = new JLabel(current.getYear() + "." + toBePrinted.get(i).getMonth() + "." + toBePrinted.get(i).getDay());
+    	            datePanel.add(dateLabel);
+    	            bookmark.add(datePanel);
+    	            
+    	            JPanel importancePanel = new JPanel();
+    	            importancePanel.setLocation(15, 120);
+    	            importancePanel.setSize(170, 30);
+    	            importancePanel.setBackground(new Color(255, 255, 255, 0));
+    	            importancePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    	            for (int j = 0; j < current.getImportance(); j++) {
+    	            	JLabel importanceLabel = new JLabel("star");
+    	            	importanceLabel.setSize(20, 20);
+    	            	importancePanel.add(importanceLabel);
+    	            }
+    	            bookmark.add(importancePanel);
+    	            
+    	            JPanel tagPanel = new JPanel();
+    	            tagPanel.setLocation(15, 155);
+    	            tagPanel.setSize(170, 30);
+    	            tagPanel.setBackground(new Color(255, 255, 255, 0));
+    	            tagPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    	            for (int j = 0; j < current.getTagManager().getSize(); j++) {
+    	            	if (j == 0) {
+    	            		JLabel tagLabel = new JLabel(current.getTagManager().get(j).getName());
+    	            		tagPanel.add(tagLabel);
+    	            	}
+    	            	else {
+    	            		JLabel tagLabel = new JLabel("/ " + current.getTagManager().get(j).getName());
+    	            		tagPanel.add(tagLabel);
+    	            	}
+    	            	
+    	            }
+    	            bookmark.add(tagPanel);
+    	            
     	            bookmarkPanel.add(bookmark);
     	            bookmarkPanel.setPreferredSize(new Dimension(800, Math.max(bookmarkPanel.getPreferredSize().height, y + 275)));
     			}
