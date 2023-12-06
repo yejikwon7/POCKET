@@ -78,7 +78,23 @@ public class JoinForm extends JDialog {
 		btnRepeat.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 		btnRepeat.setLocation(569, 220);
 		btnRepeat.setSize(60, 30);
+		btnRepeat.setBackground(Color.decode("#EEEEEE"));
+		btnRepeat.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnRepeat.addActionListener(new RepeatActionListener());
+		
+		// 새 북마크 작성 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnRepeat.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnRepeat.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnRepeat.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnRepeat.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnRepeat.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		tfPw.setLocation(314, 260);
 		tfPw.setSize(250, 30);
@@ -89,7 +105,23 @@ public class JoinForm extends JDialog {
 		btnSignup.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnSignup.setLocation(350, 350);
 		btnSignup.setSize(100, 30);
+		btnSignup.setBackground(Color.decode("#EEEEEE"));
+		btnSignup.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnSignup.addActionListener(new SignupActionListener());
+		
+		// 새 북마크 작성 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnSignup.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnSignup.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnSignup.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnSignup.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnSignup.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		c.add(logoBtn);
 		c.add(lbTitle);

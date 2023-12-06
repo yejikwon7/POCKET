@@ -32,11 +32,29 @@ public class InitialPage extends JFrame {
 		logoLabel.setBounds(400, 25, 200, 50);
 		add(logoLabel);
 		
+		
 		// 회원가입/로그인
 		joinLoginButton = new JButton("회원가입/로그인");
 		joinLoginButton.setBounds(800, 20, 150, 30);
+		Font newbookmarkFont = new Font("맑은 고딕", Font.BOLD, 12);
+		joinLoginButton.setFont(newbookmarkFont);
+		joinLoginButton.setBackground(Color.decode("#EEEEEE"));
 		joinLoginButton.addActionListener(new JoinActionListener());
 		add(joinLoginButton);
+		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		joinLoginButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	joinLoginButton.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	joinLoginButton.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	joinLoginButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	joinLoginButton.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		// 카테고리 목록을 나타낼 패널
 		categoryPanel = new JPanel();
@@ -98,9 +116,11 @@ public class InitialPage extends JFrame {
         for (int i = 0; i < categoryManager.getSize(); i++) {
         	JButton categoryButton = new JButton(categoryManager.get(i).getName());
         	categoryPanel.add(categoryButton);
+        	categoryButton.setBackground(Color.WHITE);
         	categoryButton.addActionListener(categoryButtonListener);
         }
         
+		setLocationRelativeTo(null);
         setVisible(true);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,6 +142,7 @@ public class InitialPage extends JFrame {
     	        			for (int j =0; j < c_tags.getSize(); j++) {
     	        			JButton tagButton = new JButton(c_tags.get(j).getName());
     	                	tagPanel.add(tagButton);
+    	                	tagButton.setBackground(Color.WHITE);
     	                	tagButton.addActionListener(tagButtonListener);
     	        			}
     	        		}

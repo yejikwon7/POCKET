@@ -48,10 +48,5 @@ class User {
 
         return id.equals(temp.getId());
     }
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
 
 }

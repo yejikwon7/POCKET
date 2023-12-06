@@ -13,8 +13,10 @@ public class TagManager1 {
 	
 	// 태그 추가
     public void addTag(String tagName) {
-        Tag addTag = new Tag(tagName);
-        tagManager.add(addTag);
+    	if (!contains(tagName)) {
+            Tag addTag = new Tag(tagName);
+            tagManager.add(addTag);
+        }
     }
     
     // 태그 삭제
@@ -38,6 +40,7 @@ public class TagManager1 {
     public Tag get(int index) {
         return tagManager.get(index);
     }
+    
     // 태그 배열의 객체를 반환 : name으로 탐색
     public Tag get(String name) {
     	for (int i = 0; i < tagManager.size(); i++) {
@@ -79,7 +82,7 @@ public class TagManager1 {
         }
     }
 
- // 태그 배열 교체
+    // 태그 배열 교체
     public void setTags(ArrayList<String> tagNames) {
         // 기존 태그 지우기
         tagManager.clear();

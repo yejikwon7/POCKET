@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class UpdateBookmarkForm extends JFrame {
 	private Bookmark bookmarkData;
-	private JPanel pContent = new JPanel();
+	private JEditorPane pContent = new JEditorPane();
 	private JPanel cPanel = new JPanel(); // 카테고리 패널
 	private JPanel tPanel = new JPanel(); // 태그 패널
 	private JPanel starPanel = new JPanel(); // 별 패널
@@ -15,7 +15,6 @@ public class UpdateBookmarkForm extends JFrame {
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
 	private JTextField title = new JTextField(50);
-	private JTextArea content = new JTextArea();
 	private JButton btnTstore = new JButton("임시저장");
 	private JButton btnStore = new JButton("작성");
 	private JButton btnMemo = new JButton("메모 추가");
@@ -42,28 +41,34 @@ public class UpdateBookmarkForm extends JFrame {
 		logoBtn.setFocusPainted(false);
 		logoBtn.addActionListener(new LogoActionListener());
 		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnTstore.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnTstore.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnTstore.setBorderPainted(false);
+            }
+        });
+		
 		// 제목 입력
 		title.setLocation(100, 120);
 		title.setSize(600, 40);
 		title.setHorizontalAlignment(JLabel.CENTER);
-//		
-//		// 메모 추가
-//		btnMemo.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-//		btnMemo.setLocation(799, 120);
-//		btnMemo.setSize(100, 38);
-////		btnMemo.addActionListener(new MemoActionListener());
-//		
+		title.setFont(new Font("맑은 고딕", Font.BOLD, 25));
+		
 		// 내용 입력
 		pContent.setLayout(new BorderLayout());
 		pContent.setBounds(90, 180, 820, 400);
-		content.setBounds(0, 0, 800, 400);
-		content.setFont(new Font("맑은 고딕", Font.BOLD, 25));
-		content.setLineWrap(true);  // 자동 줄 바꿈 활성화
-		content.setWrapStyleWord(true);  // 단어 단위 자동 줄 바꿈 활성화
-		JScrollPane contentScroll = new JScrollPane(content);
-		contentScroll.setBounds(0, 0, 800, 400);
+		pContent.setContentType("text/html");
+		pContent.setFont(new Font("맑은 고딕", Font.PLAIN, 25));
+		JScrollPane contentScroll = new JScrollPane(pContent);
 		contentScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		contentScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		contentScroll.getVerticalScrollBar().setUnitIncrement(10);
+		contentScroll.setBounds(90, 180, 820, 400);
 		
 		categoryManager = new CategoryManager1();
 		tagManager = new TagManager1();
@@ -85,18 +90,48 @@ public class UpdateBookmarkForm extends JFrame {
 		btnTstore.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 		btnTstore.setLocation(739, 660);
 		btnTstore.setSize(90, 30);
+		btnTstore.setBackground(Color.decode("#EEEEEE"));
+		btnTstore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnTstore.addActionListener(new TstoreActionListener());
+		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnTstore.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnTstore.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnTstore.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnTstore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnTstore.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		btnStore.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 		btnStore.setLocation(839, 660);
 		btnStore.setSize(60, 30);
+		btnStore.setBackground(Color.decode("#EEEEEE"));
+		btnStore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnStore.addActionListener(new StoreActionListener());
+		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnStore.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnStore.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnStore.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnStore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnStore.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		c.add(logoBtn);
 		c.add(title);
-		pContent.add(content);
-		pContent.add(contentScroll, BorderLayout.CENTER);
-		c.add(pContent);
+		c.add(contentScroll);
 		c.add(cPanel);
 		c.add(tPanel);
 		c.add(starPanel);
@@ -110,8 +145,8 @@ public class UpdateBookmarkForm extends JFrame {
             // 북마크 데이터를 표시
             title.setText(bookmarkData.getTitle());
             SwingUtilities.invokeLater(() -> {
-                content.setText(bookmarkData.getContent());
-                content.repaint();
+                pContent.setText(bookmarkData.getContent());
+                pContent.repaint();
             });
             clickedStars = bookmarkData.getImportance();
             displayStarRating();
@@ -162,6 +197,7 @@ public class UpdateBookmarkForm extends JFrame {
 	        	
 	        	String Name = categoryManager.get(i).getName();
 	        	JButton categoryButton = new JButton(Name);	
+	        	categoryButton.setBackground(Color.WHITE);
 	        	categoryButton.addActionListener(new CategoryButtonListener());
 	        	
 	        	buttonPanel.add(categoryButton, BorderLayout.WEST);
@@ -201,8 +237,9 @@ public class UpdateBookmarkForm extends JFrame {
 	        	        
 	       	        String Name = c_tags.get(j).getName();
 	      			JButton tagButton = new JButton(Name);
+	      			tagButton.setBackground(Color.WHITE);
 	      			
-	      		// 이전에 클릭된 태그가 있으면 색깔을 원래대로 되돌림
+	      			// 이전에 클릭된 태그가 있으면 색깔을 원래대로 되돌림
                     if (clickedTag != null && clickedTag.equals(Name)) {
                         resetTagColor(tagButton);
                     }
@@ -230,42 +267,17 @@ public class UpdateBookmarkForm extends JFrame {
 	
 	// setTagColor 및 resetTagColor 메서드 추가
 	private void setTagColor(JButton tagButton) {
-	    tagButton.setBackground(Color.GREEN);
+	    tagButton.setBackground(Color.decode("#00ADB5"));
 	}
 
 	private void resetTagColor(JButton tagButton) {
 	    tagButton.setBackground(null); // 원래대로 되돌림
 	}
-
-	
-//	// 카테고리와 태그를 표시하는 메서드 추가
-//    private void displayCategoriesAndTags() {
-//        // 선택된 카테고리 버튼의 텍스트를 가져와서 설정
-//        for (Component component : cPanel.getComponents()) {
-//            if (component instanceof JButton) {
-//                JButton categoryBtn = (JButton) component;
-//                if (bookmarkData.getCategory() != null && categoryBtn.getText().equals(bookmarkData.getCategory())) {
-//                    categoryBtn.setSelected(true);
-//                    break;
-//                }
-//            }
-//        }
-//
-//        // 선택된 태그 버튼의 텍스트를 가져와서 설정
-//        for (Component component : tPanel.getComponents()) {
-//            if (component instanceof JButton) {
-//                JButton tagBtn = (JButton) component;
-//                if (bookmarkData.getTagManager() != null && bookmarkData.getTagManager().contains(tagBtn.getText())) {
-//                    tagBtn.setSelected(true);
-//                }
-//            }
-//        }
-//    }
     
     private void displayStarRating() {
         for (int i = 0; i < clickedStars; i++) {
             JLabel starLabel = (JLabel) starPanel.getComponent(i);
-            starLabel.setForeground(Color.YELLOW);
+            starLabel.setForeground(Color.decode("#F2CB05"));
         }
     }
 	
@@ -273,6 +285,8 @@ public class UpdateBookmarkForm extends JFrame {
 	class LogoActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// 메인페이지로 돌아가는 코드
+			dispose();
+			new PersonalPage(id, uid);
 		}
 	}
 	
@@ -329,12 +343,10 @@ public class UpdateBookmarkForm extends JFrame {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-            	//SwingUtilities.invokeLater(() -> updateStarColors(starLabel));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-            	//SwingUtilities.invokeLater(() -> updateStarColors(starLabel));
             }
         });
 
@@ -355,14 +367,14 @@ public class UpdateBookmarkForm extends JFrame {
 	        if (i == clickedIndex) {
 	            // 현재 클릭된 별의 색상을 토글 (노란색 ↔ 검정색)
 	            Color currentColor = starLabel.getForeground();
-	            if (currentColor == Color.YELLOW) {
+	            if (currentColor == Color.decode("#F2CB05")) {
 	                starLabel.setForeground(Color.BLACK);
 	            } else {
-	                starLabel.setForeground(Color.YELLOW);
+	                starLabel.setForeground(Color.decode("#F2CB05"));
 	            }
 	        } else if (i < clickedIndex) {
 	            // 클릭된 별보다 앞에 있는 별들은 노란색으로 변경
-	            starLabel.setForeground(Color.YELLOW);
+	            starLabel.setForeground(Color.decode("#F2CB05"));
 	        } else {
 	            // 클릭된 별보다 뒤에 있는 별들은 검정색으로 변경
 	            starLabel.setForeground(Color.BLACK);
@@ -375,7 +387,7 @@ public class UpdateBookmarkForm extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// 텍스트 필드에서 제목과 내용을 가져옴
             String bookmarkTitle = title.getText();
-            String bookmarkContent = content.getText();
+            String bookmarkContent = pContent.getText();
             String category = categoryManager.toString();
             String tag = tagManager.toString();
 
@@ -400,7 +412,7 @@ public class UpdateBookmarkForm extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// 텍스트 필드에서 제목과 내용을 가져옴
             String bookmarkTitle = title.getText();
-            String bookmarkContent = content.getText();
+            String bookmarkContent = pContent.getText();
             String category = categoryManager.toString();
             String tag = tagManager.toString();
 
@@ -432,7 +444,7 @@ public class UpdateBookmarkForm extends JFrame {
         // 현재 날짜를 문자열로 가져오는 로직을 구현
         return java.time.LocalDate.now().toString();
     }
-	
+
 	private void showFrame() {
 		setLocationRelativeTo(null);
 		setTitle("북마크 수정");

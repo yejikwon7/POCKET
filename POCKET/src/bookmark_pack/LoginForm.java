@@ -22,10 +22,9 @@ public class LoginForm extends JFrame {
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
 	
-	public LoginForm() { //UserOperator o
+	public LoginForm() {
 		Container c = getContentPane();
 		c.setLayout(null);
-//		users = new UserDataSet();
 		
 		// 로그인 GUI 구성
 		lbTitle = new JLabel("로그인");
@@ -62,13 +61,45 @@ public class LoginForm extends JFrame {
 		btnLogin.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnLogin.setLocation(275, 275);
 		btnLogin.setSize(100, 30);
+		btnLogin.setBackground(Color.decode("#EEEEEE"));
+		btnLogin.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnLogin.addActionListener(new LoginActionListener());
+		
+		// 새 북마크 작성 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnLogin.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnLogin.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnLogin.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnLogin.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnLogin.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		// 회원가입 버튼
 		btnJoin.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnJoin.setLocation(425, 275);
 		btnJoin.setSize(100, 30);
+		btnJoin.setBackground(Color.decode("#EEEEEE"));
+		btnJoin.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnJoin.addActionListener(new JoinActionListener());
+		
+		// 새 북마크 작성 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnJoin.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnJoin.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnJoin.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnJoin.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnJoin.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		c.add(logoBtn);
 		c.add(lbTitle);

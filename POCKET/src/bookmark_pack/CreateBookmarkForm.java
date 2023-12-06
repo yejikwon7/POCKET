@@ -2,12 +2,20 @@ package bookmark_pack;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.net.URI;
 import java.util.ArrayList;
 import java.awt.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.jsoup.*;
+import java.io.IOException;
+import java.util.List;
 
 public class CreateBookmarkForm extends JFrame {
 	private Bookmark bookmarkData;
-	private JPanel pContent = new JPanel();
+	private JEditorPane pContent = new JEditorPane();
 	private JPanel cPanel = new JPanel(); // 카테고리 패널
 	private JPanel tPanel = new JPanel(); // 태그 패널
 	private JPanel starPanel = new JPanel(); // 별 패널
@@ -15,7 +23,6 @@ public class CreateBookmarkForm extends JFrame {
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
 	private JTextField title = new JTextField(50);
-	private JTextField content = new JTextField(1000);
 	private JButton btnTstore = new JButton("임시저장");
 	private JButton btnStore = new JButton("작성");
 	private JButton btnMemo = new JButton("메모 추가");
@@ -25,6 +32,9 @@ public class CreateBookmarkForm extends JFrame {
 	private static String uid;
 	private String clickedCategory = null;
 	private String clickedTag = null;
+	private JButton urlBtn = new JButton("입력");
+	private JTextField addressField = new JTextField("https://www.example.com");
+	private String contenturl;
 	
 	public CreateBookmarkForm(int id, String uid) {
 		Container c = getContentPane();
@@ -43,33 +53,64 @@ public class CreateBookmarkForm extends JFrame {
 		logoBtn.addActionListener(new LogoActionListener());
 		
 		// 제목 입력
-		title.setLocation(100, 120);
+		title.setLocation(100, 110);
 		title.setSize(600, 40);
-		title.setHorizontalAlignment(JLabel.CENTER);
-		
-		// 메모 추가
-//		btnMemo.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-//		btnMemo.setLocation(799, 120);
-//		btnMemo.setSize(100, 38);
-//		btnMemo.addActionListener(new StoreActionListener());
+		title.setFont(new Font("맑은 고딕", Font.BOLD, 25));
+		title.setHorizontalAlignment(JLabel.LEFT);
 		
 		// 내용 입력
 		pContent.setLayout(new BorderLayout());
-		pContent.setBounds(100, 180, 800, 400);
-		content.setFont(new Font("맑은 고딕", Font.BOLD, 25));
-		content.setBounds(100, 180, 800, 400);
-		content.setHorizontalAlignment(JLabel.CENTER);
-//		JScrollPane contentScroll = new JScrollPane(content);
+		pContent.setBounds(90, 200, 820, 400);
+		pContent.setContentType("text/html");
+		pContent.setFont(new Font("맑은 고딕", Font.PLAIN, 25));
+		JScrollPane contentScroll = new JScrollPane(pContent);
+		contentScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		contentScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		contentScroll.getVerticalScrollBar().setUnitIncrement(10);
+		contentScroll.setBounds(90, 200, 820, 400);
+		
+		// 주소 입력 텍스트필드
+		addressField.setBounds(100, 160, 730, 30);
+		addressField.setFont(new Font("맑은 고딕", Font.PLAIN, 20));
+		
+		// 주소 입력 버튼
+		urlBtn.setBounds(840, 160, 60, 30);
+		urlBtn.setFont(new Font("맑은 고딕", Font.BOLD, 13));
+		urlBtn.setBackground(Color.decode("#EEEEEE"));
+		urlBtn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+		urlBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                String url = addressField.getText();
+                String contenturl = loadWebPage(pContent, url);
+ 
+        		pContent.setText(contenturl);
+            }
+		});
+		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		urlBtn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	urlBtn.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	urlBtn.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	urlBtn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	urlBtn.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
+
 		
 		categoryManager = new CategoryManager1();
 		tagManager = new TagManager1();
 		cPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		cPanel.setBounds(100, 600, 400, 40);
+		cPanel.setBounds(100, 620, 400, 40);
 		
 		tPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		tPanel.setBounds(100, 650, 400, 40);
+		tPanel.setBounds(100, 670, 400, 40);
 		
-        starPanel.setBounds(500, 590, 400, 50);
+        starPanel.setBounds(500, 610, 400, 50);
         starPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         for (int i = 1; i <= 5; i++) {
             JLabel starLabel = createStarLabel();
@@ -79,25 +120,58 @@ public class CreateBookmarkForm extends JFrame {
         }
 		
 		btnTstore.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-		btnTstore.setLocation(739, 660);
+		btnTstore.setLocation(739, 680);
 		btnTstore.setSize(90, 30);
+		btnTstore.setBackground(Color.decode("#EEEEEE"));
+		btnTstore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnTstore.addActionListener(new TstoreActionListener());
 		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnTstore.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnTstore.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnTstore.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnTstore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnTstore.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
+		
 		btnStore.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-		btnStore.setLocation(839, 660);
+		btnStore.setLocation(839, 680);
 		btnStore.setSize(60, 30);
+		btnStore.setBackground(Color.decode("#EEEEEE"));
+		btnStore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnStore.addActionListener(new StoreActionListener());
+		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnStore.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnStore.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnStore.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnStore.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnStore.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		c.add(logoBtn);
 		c.add(title);
-		pContent.add(content);
-		c.add(pContent);
+		c.add(contentScroll);
 		c.add(cPanel);
 		c.add(tPanel);
 		c.add(starPanel);
 		c.add(btnTstore);
 		c.add(btnStore);
 		c.add(btnMemo);
+		c.add(addressField);
+		c.add(urlBtn);
 		
         // 프레임이 생성되면서 데이터베이스로부터 카테고리와 태그를 불러옴
 		loadCategoriesAndTags();
@@ -141,21 +215,9 @@ public class CreateBookmarkForm extends JFrame {
 	        	String Name = categoryManager.get(i).getName();
 	        	JButton categoryButton = new JButton(Name);	
 	        	categoryButton.addActionListener(new CategoryButtonListener());
-	        	
-//	        	JButton deleteButton = new JButton("X");
-//	        	deleteButton.setForeground(Color.RED);
-//	        	deleteButton.addActionListener(new ActionListener() {
-//	                public void actionPerformed(ActionEvent e) {
-//	                    int result = JOptionPane.showConfirmDialog(null, "해당 카테고리를 삭제하시겠습니까?", "Message", JOptionPane.YES_NO_OPTION);
-//	                    if (result == JOptionPane.YES_OPTION) {
-//	                    	categoryManager.delCategory(Name);
-//	                    	paintCategoryPanel();	// 카테고리 목록 패널 업데이트
-//	                    }
-//	                }
-//	            });
+	        	categoryButton.setBackground(Color.WHITE);
 	        	
 	        	buttonPanel.add(categoryButton, BorderLayout.WEST);
-//	        	buttonPanel.add(deleteButton, BorderLayout.EAST);
 	        	cPanel.add(buttonPanel);
 	        }
 		}
@@ -172,6 +234,52 @@ public class CreateBookmarkForm extends JFrame {
 			new PersonalPage(id, uid);
 		}
 	}
+	
+	// url 추출
+	private static String loadWebPage(JEditorPane pContent, String url) {
+        
+        try {
+            // Jsoup을 사용하여 웹 페이지의 본문만 추출
+            String bodyContent = extractBodyContent(url);
+
+            // JEditorPane에 본문 설정
+            pContent.setText("<html>" + bodyContent + "</html>");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return pContent.getText();
+    }
+	
+	private static String extractBodyContent(String url) throws IOException {
+		// Jsoup을 사용하여 웹 페이지를 파싱
+        Document document = Jsoup.connect(url).get();
+
+        // 본문 내용 추출
+        Element body = document.body();
+
+        // 본문에서 필요한 부분을 추출 (예: 본문 내의 모든 p 태그의 내용)
+        Elements paragraphs = body.select("p, table, img");
+
+        // 추출한 내용과 이미지를 순서대로 저장하는 리스트
+        List<String> contentList = new ArrayList<>();
+        List<String> imageList = new ArrayList<>();
+
+        // 본문 내용을 리스트에 추가
+        for (Element paragraph : paragraphs) {
+            contentList.add(paragraph.outerHtml());
+        }
+
+        // 리스트에 저장된 내용을 문자열로 합치기
+        StringBuilder urlcontent = new StringBuilder();
+        for (String item : contentList) {
+        	urlcontent.append(item).append("<br>");
+        }
+        
+        return urlcontent.toString();
+    }
+	
 	
 	// 카테고리 버튼 클릭 시, 태그 목록 패널에 태그 버튼들을 생성하는 CategoryButtonListener
 	private class CategoryButtonListener implements ActionListener {
@@ -200,8 +308,10 @@ public class CreateBookmarkForm extends JFrame {
 	        	        
 	       	        String Name = c_tags.get(j).getName();
 	      			JButton tagButton = new JButton(Name);
+	      			tagButton.setBackground(Color.WHITE);
 	      			
-	      		// 이전에 클릭된 태그가 있으면 색깔을 원래대로 되돌림
+	      			
+	      			// 이전에 클릭된 태그가 있으면 색깔을 원래대로 되돌림
                     if (clickedTag != null && clickedTag.equals(Name)) {
                         resetTagColor(tagButton);
                     }
@@ -215,22 +325,8 @@ public class CreateBookmarkForm extends JFrame {
                             setTagColor(tagButton);
                         }
                     });
-//		       			tagButton.addActionListener(tagButtonListener);
-	      			
-//	       			JButton deleteButton = new JButton("X");
-//	               	deleteButton.setForeground(Color.RED);
-//	               	deleteButton.addActionListener(new ActionListener() {
-//	               		public void actionPerformed(ActionEvent e) {
-//	               			int result = JOptionPane.showConfirmDialog(null, "해당 태그를 삭제하시겠습니까?", "Message", JOptionPane.YES_NO_OPTION);
-//	                        if (result == JOptionPane.YES_OPTION) {
-//	                           	c_tags.delTag(Name);
-//	                           	panintTagPanel(buttonText);	// 태그 목록 패널 업데이트
-//	                        }
-//	                    }
-//	               	});
 	                	
 	                buttonPanel.add(tagButton, BorderLayout.WEST);
-//	               	buttonPanel.add(deleteButton, BorderLayout.EAST);
 	               	tPanel.add(buttonPanel);
 	        		}
 	        	}
@@ -242,7 +338,7 @@ public class CreateBookmarkForm extends JFrame {
 	
 	// setTagColor 및 resetTagColor 메서드 추가
 	private void setTagColor(JButton tagButton) {
-	    tagButton.setBackground(Color.GREEN);
+	    tagButton.setBackground(Color.decode("#00ADB5"));
 	}
 
 	private void resetTagColor(JButton tagButton) {
@@ -264,12 +360,10 @@ public class CreateBookmarkForm extends JFrame {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-            	//SwingUtilities.invokeLater(() -> updateStarColors(starLabel));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-            	//SwingUtilities.invokeLater(() -> updateStarColors(starLabel));
             }
         });
 
@@ -295,14 +389,14 @@ public class CreateBookmarkForm extends JFrame {
 	        if (i <= clickedIndex) {
 	            // 현재 클릭된 별의 색상을 토글 (노란색 ↔ 검정색)
 	            Color currentColor = starLabel.getForeground();
-	            if (currentColor == Color.YELLOW) {
+	            if (currentColor == Color.decode("#F2CB05")) {
 	                starLabel.setForeground(Color.BLACK);
 	            } else {
-	                starLabel.setForeground(Color.YELLOW);
+	                starLabel.setForeground(Color.decode("#F2CB05"));
 	            }
 	        } else if (i < clickedIndex) {
 	            // 클릭된 별보다 앞에 있는 별들은 노란색으로 변경
-	            starLabel.setForeground(Color.YELLOW);
+	            starLabel.setForeground(Color.decode("#F2CB05"));
 	        } else {
 	            // 클릭된 별보다 뒤에 있는 별들은 검정색으로 변경
 	            starLabel.setForeground(Color.BLACK);
@@ -317,7 +411,7 @@ public class CreateBookmarkForm extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// 텍스트 필드에서 제목과 내용을 가져옵니다.
             String bookmarkTitle = title.getText();
-            String bookmarkContent = content.getText();
+            String bookmarkContent = pContent.getText();
 
             // 임시 북마크 객체를 생성합니다.
             Bookmark temporaryBookmark = new Bookmark(
@@ -340,7 +434,7 @@ public class CreateBookmarkForm extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// 텍스트 필드에서 제목과 내용을 가져옵니다.
             String bookmarkTitle = title.getText();
-            String bookmarkContent = content.getText();
+            String bookmarkContent = pContent.getText();
 
             // 북마크 객체를 생성합니다.
             Bookmark newBookmark = new Bookmark(
@@ -360,30 +454,14 @@ public class CreateBookmarkForm extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "데이터베이스에 북마크를 저장하는 중 오류가 발생했습니다.");
             }
-
-            // 북마크를 데이터베이스에 업데이트하거나 삽입합니다.
-//            boolean success;
-//            if (BookmarkDB.insertBookmark(newBookmark)) {
-//                success = true;
-//            } else {
-//                success = BookmarkDB.insertBookmark(newBookmark);
-//            }
-//
-//            if (success) {
-//                JOptionPane.showMessageDialog(null, "북마크가 데이터베이스에 저장되었습니다.");
-//                PersonalPage.updateBookmarks();
-//            } else {
-//                JOptionPane.showMessageDialog(null, "데이터베이스에 북마크를 저장하는 중 오류가 발생했습니다.");
-//            }
-//            
+            
             dispose();
             new PersonalPage(id, uid);
 		}
 	}
 	
 	private String getCurrentDate() {
-        // 현재 날짜를 문자열로 가져오는 로직을 구현합니다.
-        // 예를 들어, java.time.LocalDate를 사용할 수 있습니다.
+        // 현재 날짜를 문자열로 가져오는 로직
         return java.time.LocalDate.now().toString();
     }
 	

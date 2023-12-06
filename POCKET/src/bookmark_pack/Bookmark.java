@@ -35,6 +35,7 @@ public class Bookmark {
 		this.id = id;
 		category = "1";
 		this.b_tags = new TagManager1();
+		this.b_tags.parseTags(b_tags);
 	}
 	
 	public Bookmark(String title, int importance, String b_tags) {

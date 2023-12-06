@@ -5,9 +5,9 @@ import java.awt.event.*;
 import java.awt.*;
 
 public class BookmarkForm extends JFrame {
-//	private BookmarkData bookmarkData;
 	private Bookmark bookmarkData;
 	private JPanel panel = new JPanel();
+	private JEditorPane pContent = new JEditorPane();
 	private ImageIcon logo = new ImageIcon("images/logo.png");
 	private JButton logoBtn = new JButton(logo);
 	private JLabel laTitle;
@@ -15,18 +15,19 @@ public class BookmarkForm extends JFrame {
 	private JLabel tag;
 	private JLabel star;
 	private JLabel date;
-	private JLabel content;
 	private JButton btnUpdate = new JButton("수정");
 	private JButton btnDelete = new JButton("삭제");
 	private String user;
 	private static int id;
 	private static String uid;
+	private static int bookmarkNum;
 	
-	public BookmarkForm(int id, String uid) {
+	public BookmarkForm(int id, String uid, int bookmarkNum) {
 		Container c = getContentPane();
 		c.setLayout(null);
 		this.id = id;
 		this.uid = uid;
+		this.bookmarkNum = bookmarkNum;
 		
 		panel.setBounds(0, 0, 1000, 800); // 패널의 위치와 크기 설정
 		panel.setLayout(null);
@@ -49,47 +50,79 @@ public class BookmarkForm extends JFrame {
 		category = new JLabel("카테고리");
 		category.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		category.setLocation(200, 185);
-		category.setSize(100, 30);
+		category.setSize(150, 30);
 		category.setHorizontalAlignment(JLabel.LEFT);
-		JScrollPane categoryScroll = new JScrollPane(category);
 		
 		tag = new JLabel("태그");
 		tag.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		tag.setLocation(200, 230);
-		tag.setSize(100, 30);
+		tag.setSize(150, 30);
 		tag.setHorizontalAlignment(JLabel.LEFT);
-		JScrollPane tagScroll = new JScrollPane(tag);
 		
 		star = new JLabel("중요도");
 		star.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		star.setLocation(700, 185);
-		star.setSize(100, 30);
+		star.setSize(150, 30);
 		star.setHorizontalAlignment(JLabel.RIGHT);
 		
 		date = new JLabel("날짜");
 		date.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		date.setLocation(700, 230);
-		date.setSize(100, 30);
+		date.setSize(150, 30);
 		date.setHorizontalAlignment(JLabel.RIGHT);
 		
-		content = new JLabel("내용");
-		content.setFont(new Font("맑은 고딕", Font.BOLD, 25));
-		content.setLocation(200, 300);
-		content.setSize(600, 500);
-		content.setHorizontalAlignment(JLabel.LEFT);
-		JScrollPane contentScroll = new JScrollPane(panel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		pContent.setLayout(new BorderLayout());
+		pContent.setBounds(190, 300, 620, 400);
+		pContent.setContentType("text/html");
+		pContent.setFont(new Font("맑은 고딕", Font.PLAIN, 25));
+		JScrollPane contentScroll = new JScrollPane(pContent);
+		contentScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		contentScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		contentScroll.getVerticalScrollBar().setUnitIncrement(10);
+		contentScroll.setBounds(190, 300, 620, 400);
+		contentScroll.setPreferredSize(new Dimension(620, 400));
 		
 		btnUpdate.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 		btnUpdate.setLocation(810, 700);
 		btnUpdate.setSize(60, 30);
+		btnUpdate.setBackground(Color.decode("#EEEEEE"));
+		btnUpdate.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnUpdate.addActionListener(new UpdateActionListener());
+		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnUpdate.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnUpdate.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnUpdate.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnUpdate.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnUpdate.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		btnDelete.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 		btnDelete.setLocation(880, 700);
 		btnDelete.setSize(60, 30);
+		btnDelete.setBackground(Color.decode("#EEEEEE"));
+		btnDelete.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		btnDelete.addActionListener(new DeleteActionListener());
+		
+		// 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		btnDelete.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	btnDelete.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	btnDelete.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	btnDelete.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	btnDelete.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		
 		c.add(panel);
 		panel.add(logoBtn);
@@ -98,14 +131,14 @@ public class BookmarkForm extends JFrame {
 		panel.add(tag);
 		panel.add(star);
 		panel.add(date);
-		panel.add(content);
 		panel.add(btnUpdate);
 		panel.add(btnDelete);
+		c.add(contentScroll);
 		
 		setSize(1000, 800);
 		showFrame();
 		
-		this.bookmarkData = BookmarkDB.getBookmarkData(id);
+		this.bookmarkData = BookmarkDB.getBookmarkData(this.id);
 
         if (bookmarkData != null) {
             displayBookmarkData();
@@ -119,11 +152,11 @@ public class BookmarkForm extends JFrame {
 	
 	private void displayBookmarkData() {
         laTitle.setText(bookmarkData.getTitle());
-//        category.setText("카테고리: " + bookmark.getCategory());
-        tag.setText("태그: " + bookmarkData.getTagManager());
-        star.setText("중요도: " + bookmarkData.getImportance());
-        date.setText("날짜: " + bookmarkData.getDate());
-        content.setText("<html>" + bookmarkData.getContent() + "</html>");
+        category.setText("Category " + bookmarkData.getCategory());
+        tag.setText("Tag " + bookmarkData.getTagManager());
+        star.setText("Star " + bookmarkData.getImportance());
+        date.setText("Date " + bookmarkData.getDate());
+        pContent.setText("<html>" + bookmarkData.getContent() + "</html>");
     }
 	
 	// 로고 버튼 리스너
@@ -165,15 +198,10 @@ public class BookmarkForm extends JFrame {
 	
 	private void showFrame() {
 		setLocationRelativeTo(null);
-		setTitle("북마크");
+		setTitle("북마크 보기");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setVisible(true);
 	}
-
-//	public static void main(String[] args) {
-//		// TODO Auto-generated method stub
-//		new BookmarkForm(1);
-//	}
 
 }

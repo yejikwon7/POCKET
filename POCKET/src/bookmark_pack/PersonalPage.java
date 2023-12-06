@@ -3,10 +3,7 @@ package bookmark_pack;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
 import javax.swing.*;
-
-import bookmark_pack.CreateBookmarkForm.LogoActionListener;
 
 public class PersonalPage extends JFrame {
 	private ImageIcon logo = new ImageIcon("images/logo.png");
@@ -24,6 +21,7 @@ public class PersonalPage extends JFrame {
 	private static int id;
 	private static String uid;
 	private TagManager1 tagManager;
+	private static int bookmarkNum;
 	
 	public PersonalPage(int id, String uid) {
 		this.id = id;
@@ -46,33 +44,53 @@ public class PersonalPage extends JFrame {
 		
 		// 로그인 환영 문구
 		welcomeLabel = new JLabel(uid + "님, 환영합니다!");	
+		Font welcomeFont = new Font("맑은 고딕", Font.BOLD, 13);
+		welcomeLabel.setFont(welcomeFont);
 		welcomeLabel.setBounds(850, 5, 150, 20);
 		welcomeLabel.setForeground(Color.BLACK);
 		add(welcomeLabel);
 		
 		// 새 북마크 작성
 		newbookmarkButton = new JButton("새 북마크 작성");
-		newbookmarkButton.setBounds(780, 100, 120, 30);
 		newbookmarkButton.addActionListener(new NewActionListener());
+		Font newbookmarkFont = new Font("맑은 고딕", Font.BOLD, 12);
+		newbookmarkButton.setFont(newbookmarkFont);
+		newbookmarkButton.setBackground(Color.decode("#EEEEEE"));
+		newbookmarkButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+		newbookmarkButton.setBounds(780, 100, 120, 30);
+		
+		// 새 북마크 작성 버튼 마우스 오버에 대한 처리를 담당하는 리스너
+		newbookmarkButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                // 마우스가 컴포넌트에 들어왔을 때
+            	newbookmarkButton.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+            	newbookmarkButton.setBackground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 컴포넌트에서 나갔을 때
+            	newbookmarkButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+            	newbookmarkButton.setBackground(Color.decode("#EEEEEE"));
+            }
+        });
 		add(newbookmarkButton);
 		
 		// 카테고리 목록을 나타낼 패널
 		categoryPanel = new JPanel();
 		categoryPanel.setBounds(100, 140, 800, 35);
-		categoryPanel.setBackground(Color.LIGHT_GRAY);
+		categoryPanel.setBackground(Color.decode("#EEEEEE"));
 		categoryPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		add(categoryPanel);
 		
 		// 태그 목록을 나타낼 패널
         tagPanel = new JPanel();
         tagPanel.setBounds(100, 180, 800, 35);
-        tagPanel.setBackground(Color.LIGHT_GRAY);
+        tagPanel.setBackground(Color.decode("#EEEEEE"));
         tagPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         add(tagPanel);
         
         // 북마크 목록을 나타낼 패널
         bookmarkPanel = new JPanel();
-        bookmarkPanel.setBackground(Color.LIGHT_GRAY);
+        bookmarkPanel.setBackground(Color.decode("#EEEEEE"));
         bookmarkPanel.setLayout(null);
         bookmarkScrollPane = new JScrollPane(bookmarkPanel);
         bookmarkScrollPane.setBounds(100, 230, 800, 500);
@@ -89,6 +107,7 @@ public class PersonalPage extends JFrame {
         panintCategoryPanel();
         loadCategoriesAndTags();
         
+		setLocationRelativeTo(null);
         setVisible(true);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -112,11 +131,6 @@ public class PersonalPage extends JFrame {
     }
     
     public static void updateBookmarks() {
-//    	 ArrayList<Bookmark> bookmarks = BookmarkDB.getBookmarks(id);
-//
-//         for (Bookmark bookmark : bookmarks) {
-//             bookmarkManager.addBookmark(bookmark);
-//         }
     }
 	
 	// 로고 버튼 리스너
@@ -132,14 +146,14 @@ public class PersonalPage extends JFrame {
 	class BookmarActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			dispose();
-			new BookmarkForm(id, uid);
+			bookmarkNum = BookmarkDB.getBookmarkNum();
+			new BookmarkForm(id, uid, bookmarkNum);
 		}
 	}
 	
 	// 새 북마크 생성 버튼
 	class NewActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			dispose();
 			new CreateBookmarkForm(id, uid);
 		}
 	}
@@ -149,6 +163,7 @@ public class PersonalPage extends JFrame {
 		categoryPanel.removeAll();
 		// 카테고리 추가 버튼
 		JButton addCategoryButton = new JButton("+");
+		addCategoryButton.setBackground(Color.WHITE);
 		addCategoryButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String categoryName = JOptionPane.showInputDialog(null, "추가할 카테고리의 이름을 입력해주세요.", "Message", JOptionPane.PLAIN_MESSAGE);
@@ -156,14 +171,6 @@ public class PersonalPage extends JFrame {
 					categoryManager.addCategory(categoryName);
 					panintCategoryPanel();	// 카테고리 목록 패널 업데이트
 		        }
-				
-				// DB에 저장
-//	            String category = categoryManager.toString();
-//
-//	            // 북마크 객체를 생성
-//	            Bookmark newBookmark = new Bookmark(
-//	                id, category
-//	            );
 
 	            // 북마크를 데이터베이스에 업데이트하거나 삽입합니다.
 	            boolean success;
@@ -189,9 +196,13 @@ public class PersonalPage extends JFrame {
 	        	
 	        	String Name = categoryManager.get(i).getName();
 	        	JButton categoryButton = new JButton(Name);	
+	        	categoryButton.setBackground(Color.WHITE);
+	        	Font CategoryFont = new Font("맑은 고딕", Font.BOLD, 10);
+	        	categoryButton.setFont(CategoryFont);
 	        	categoryButton.addActionListener(categoryButtonListener);
 	        	
 	        	JButton deleteButton = new JButton("X");
+	        	deleteButton.setBackground(Color.WHITE);
 	        	deleteButton.setForeground(Color.RED);
 	        	deleteButton.addActionListener(new ActionListener() {
 	                public void actionPerformed(ActionEvent e) {
@@ -205,7 +216,6 @@ public class PersonalPage extends JFrame {
 
                             if (success) {
                                 JOptionPane.showMessageDialog(null, "북마크가 삭제되었습니다.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                                dispose(); // 현재 화면을 닫음
                             } else {
                                 JOptionPane.showMessageDialog(null, "북마크 삭제에 실패했습니다.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
@@ -240,21 +250,13 @@ public class PersonalPage extends JFrame {
 		tagPanel.removeAll();
 		// 태그 추가 버튼
 		JButton addTagButton = new JButton("+");
+		addTagButton.setBackground(Color.WHITE);
 		addTagButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String tagName = JOptionPane.showInputDialog(null, "추가할 태그의 이름을 입력해주세요.", "Message", JOptionPane.PLAIN_MESSAGE);
 				if (tagName != null && !tagName.trim().isEmpty()) {
 					categoryManager.get(buttonText).getTagManager().addTag(tagName);
 					panintTagPanel(buttonText);	// 태그 목록 패널 업데이트
-					
-					// DB에 저장
-//					String category = categoryManager.toString();
-//		            String tag = tagManager.toString();
-//
-//		            // 북마크 객체를 생성
-//		            Bookmark newBookmark = new Bookmark(
-//		                id, category, tag
-//		            );
 
 		            // 태그를 데이터베이스에 업데이트하거나 삽입합니다.
 		            boolean success;
@@ -286,9 +288,13 @@ public class PersonalPage extends JFrame {
 	        	        
 	       	        String Name = c_tags.get(j).getName();
 	      			JButton tagButton = new JButton(Name);
+	      			tagButton.setBackground(Color.WHITE);
+	      			Font tagFont = new Font("맑은 고딕", Font.BOLD, 10);
+	      			tagButton.setFont(tagFont);
 	       			tagButton.addActionListener(tagButtonListener);
 	        			
 	       			JButton deleteButton = new JButton("X");
+	       			deleteButton.setBackground(Color.WHITE);
 	               	deleteButton.setForeground(Color.RED);
 	               	deleteButton.addActionListener(new ActionListener() {
 	               		public void actionPerformed(ActionEvent e) {
@@ -302,7 +308,6 @@ public class PersonalPage extends JFrame {
 
 	                            if (success) {
 	                                JOptionPane.showMessageDialog(null, "북마크가 삭제되었습니다.", "Success", JOptionPane.INFORMATION_MESSAGE);
-	                                dispose(); // 현재 화면을 닫음
 	                            } else {
 	                                JOptionPane.showMessageDialog(null, "북마크 삭제에 실패했습니다.", "Error", JOptionPane.ERROR_MESSAGE);
 	                            }
@@ -332,7 +337,6 @@ public class PersonalPage extends JFrame {
     			JButton clickedButton = (JButton) e.getSource();
     			String buttonText = clickedButton.getText();
     			// buttonText와 같은 name을 가진 태그를 포함하는 북마크들을 "toBePrinted"라는 동적배열에 임시 저장
-    			//ArrayList<Bookmark> toBePrinted = new ArrayList<>();
     			ArrayList<Bookmark> bookmarks = BookmarkDB.getBookmarks(id, buttonText);
     			for (int i = 0; i < bookmarkManager.getSize(); i++) {
     				TagManager1 b_tags = bookmarkManager.get(i).getTagManager();
@@ -343,77 +347,107 @@ public class PersonalPage extends JFrame {
     					}
     				}
     			}
+    			
     			// toBePrinted 배열에 있는 북마크들을 북마크 목록 패널에 출력
     			for (int i = 0; i < bookmarks.size(); i++) {
     				JButton bookmark = new JButton();
     				bookmark.setSize(200, 200);
-    	        	int x = 75 + 225*(i%3);
-    	            int y = 75 + 275*(i/3);
+    	        	int x = 75 + 225 * (i % 3);
+    	            int y = 75 + 275 * (i / 3);
     	        	bookmark.setLocation(x , y);
-    	        	bookmark.setBackground(Color.LIGHT_GRAY);
-    	            bookmark.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    	        	bookmark.setBackground(Color.decode("#EEEEEE"));
+    	        	bookmark.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
     	        	bookmark.setLayout(null);
     	        	
     	        	Bookmark current = bookmarks.get(i);
     	        	bookmark.addActionListener(new ActionListener() {
 	               		public void actionPerformed(ActionEvent e) {
-	               			new BookmarkForm(id, uid);
-	                    }
-	               	});
+	               			bookmarkNum = BookmarkDB.getBookmarkNum();
+	               			new BookmarkForm(id, uid, bookmarkNum);
+                    }
+               	});
     	        	
-    	        	JPanel titlePanel = new JPanel();
-    	        	titlePanel.setLayout(new BorderLayout());
-    	        	titlePanel.setLocation(15, 15);
-    	        	titlePanel.setSize(170, 65);
-    	        	titlePanel.setBackground(new Color(255, 255, 255, 0));
-    	        	titlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    	            JLabel titleLabel = new JLabel(current.getTitle());
-    	            titlePanel.add(titleLabel, BorderLayout.CENTER);
-    	            bookmark.add(titlePanel);
-    	            
-    	            JPanel datePanel = new JPanel();
-    	            datePanel.setLocation(15, 85);
-    	            datePanel.setSize(170, 30);
-    	            datePanel.setBackground(new Color(255, 255, 255, 0));
-    	            datePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    	            JLabel dateLabel = new JLabel(current.getYear() + "." + bookmarks.get(i).getMonth() + "." + bookmarks.get(i).getDay());
-    	            datePanel.add(dateLabel);
-    	            bookmark.add(datePanel);
-    	            
-    	            JPanel importancePanel = new JPanel();
-    	            importancePanel.setLocation(15, 120);
-    	            importancePanel.setSize(170, 30);
-    	            importancePanel.setBackground(new Color(255, 255, 255, 0));
-    	            importancePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    	            for (int j = 0; j < current.getImportance(); j++) {
-    	            	JLabel importanceLabel = new JLabel("star");
-    	            	importanceLabel.setSize(20, 20);
-    	            	importancePanel.add(importanceLabel);
-    	            }
-    	            bookmark.add(importancePanel);
-    	            
-    	            JPanel tagPanel = new JPanel();
-    	            tagPanel.setLocation(15, 155);
-    	            tagPanel.setSize(170, 30);
-    	            tagPanel.setBackground(new Color(255, 255, 255, 0));
-    	            tagPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    	            for (int j = 0; j < current.getTagManager().getSize(); j++) {
-    	            	if (j == 0) {
-    	            		JLabel tagLabel = new JLabel(current.getTagManager().get(j).getName());
-    	            		tagPanel.add(tagLabel);
-    	            	}
-    	            	else {
-    	            		JLabel tagLabel = new JLabel("/ " + current.getTagManager().get(j).getName());
-    	            		tagPanel.add(tagLabel);
-    	            	}
-    	            	
-    	            }
-    	            bookmark.add(tagPanel);
-    	            
-    	            bookmarkPanel.add(bookmark);
-    	            bookmarkPanel.setPreferredSize(new Dimension(800, Math.max(bookmarkPanel.getPreferredSize().height, y + 275)));
-    			}
-    		}
+	        	JPanel titlePanel = new JPanel();
+	        	titlePanel.setLayout(new BorderLayout());
+	        	titlePanel.setLocation(15, 15);
+	        	titlePanel.setSize(170, 65);
+	        	titlePanel.setBackground(new Color(255, 255, 255, 0));
+	        	titlePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	            JLabel titleLabel = new JLabel(current.getTitle());
+	            Font titleFont = new Font("맑은 고딕", Font.BOLD, 12);
+	            titleLabel.setFont(titleFont);
+	            titlePanel.add(titleLabel, BorderLayout.CENTER);
+	            bookmark.add(titlePanel);
+	            
+	            JPanel datePanel = new JPanel();
+	            datePanel.setLocation(15, 85);
+	            datePanel.setSize(170, 30);
+	            datePanel.setBackground(new Color(255, 255, 255, 0));
+	            datePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	            JLabel dateLabel = new JLabel(current.getYear() + "." + bookmarks.get(i).getMonth() + "." + bookmarks.get(i).getDay());
+	            Font dateFont = new Font("맑은 고딕", Font.BOLD, 12);
+	            dateLabel.setFont(dateFont);
+	            datePanel.add(dateLabel);
+	            bookmark.add(datePanel);
+	            
+	            JPanel importancePanel = new JPanel();
+	            importancePanel.setLocation(15, 120);
+	            importancePanel.setSize(170, 30);
+	            importancePanel.setBackground(new Color(255, 255, 255, 0));
+	            importancePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	            for (int j = 0; j < current.getImportance(); j++) {
+	            	ImageIcon starImage = new ImageIcon("images/star.png");
+	            	JLabel importanceLabel = new JLabel(starImage);
+	            	importancePanel.add(importanceLabel);
+	            }
+	            bookmark.add(importancePanel);
+	            
+	            JPanel tagPanel = new JPanel();
+	            tagPanel.setLocation(15, 155);
+	            tagPanel.setSize(170, 30);
+	            tagPanel.setBackground(new Color(255, 255, 255, 0));
+	            tagPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	            for (int j = 0; j < current.getTagManager().getSize(); j++) {
+	            	if (j == 0) {
+	            		JLabel tagLabel = new JLabel(current.getTagManager().get(j).getName());
+	            		Font tagFont = new Font("맑은 고딕", Font.BOLD, 12);
+	            		tagLabel.setFont(tagFont);
+	            		tagPanel.add(tagLabel);
+	            	}
+	            	else {
+	            		JLabel tagLabel = new JLabel("/ " + current.getTagManager().get(j).getName());
+	            		tagPanel.add(tagLabel);
+	            	}
+	            	
+	            }
+	            bookmark.add(tagPanel);
+	            
+		        // 북마크 마우스 오버에 대한 처리를 담당하는 리스너
+	            bookmark.addMouseListener(new MouseAdapter() {
+	                public void mouseEntered(MouseEvent e) {
+	                    // 마우스가 컴포넌트에 들어왔을 때
+	                	bookmark.setBackground(Color.WHITE);
+	                	bookmark.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+	                	titlePanel.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+	                	datePanel.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+	                	importancePanel.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+	                	tagPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#00ADB5"), 3));
+	                }
+	                public void mouseExited(MouseEvent e) {
+	                    // 마우스가 컴포넌트에서 나갔을 때
+	                	bookmark.setBackground(Color.decode("#EEEEEE"));
+	                    bookmark.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	                    titlePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	                    datePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	                    importancePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	                    tagPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+	                }
+	            });
+	            
+	            bookmarkPanel.add(bookmark);
+	            bookmarkPanel.setPreferredSize(new Dimension(800, Math.max(bookmarkPanel.getPreferredSize().height, y + 275)));
+			}
+		}
     		bookmarkPanel.revalidate();
     		bookmarkPanel.repaint();
     	}

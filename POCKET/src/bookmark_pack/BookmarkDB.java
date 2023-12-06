@@ -4,11 +4,13 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class BookmarkDB {
+    public static int bookmarkNum = 0;
     public static Connection makeConnection() {
         String url = "jdbc:mysql://localhost/pocket?characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false";
         String id = "root";
         String password = "Pqlamz000!";
         Connection con = null;
+
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -43,6 +45,7 @@ public class BookmarkDB {
                 String title = rs.getString("title");
                 int star = rs.getInt("star");
                 String tagValue = rs.getString("b_tag");
+                bookmarkNum = rs.getInt("bookmark_num");
 
                 // 기존 코드에서는 태그를 따로 가져오지 않았으므로 추가해야 함
                 Bookmark bookmark = new Bookmark(title, star, tagValue);
@@ -65,19 +68,26 @@ public class BookmarkDB {
 
         return bookmarks;
     }
+    
+    public static int getBookmarkNum() {
+    	return bookmarkNum;
+    }
 
     public static Bookmark getBookmarkData(int user) {
         Connection con = makeConnection();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Bookmark bookmarkData = null;
+        
+        bookmarkNum = getBookmarkNum();
 
-        String sql = "SELECT * FROM bookmark WHERE bookmark_user = ?";
+        String sql = "SELECT * FROM bookmark WHERE bookmark_user = ? AND bookmark_num = ?";
 
         try {
             System.out.println("Executing SQL query: " + sql); // 디버깅용 출력
             pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, user);
+            pstmt.setInt(2, bookmarkNum);
 
             rs = pstmt.executeQuery();
             if (rs == null) {

@@ -23,7 +23,7 @@ public class CategoryData {
     	this.categoryName = categoryName;
     }
 	
-//	 카테고리의 태그 배열 반환
+	//카테고리의 태그 배열 반환
 	public TagManager1 getTagManager() {
 		return c_tags;
 	}
